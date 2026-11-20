@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Family parte 2 · Armado 3D y piezas</title>
+<style>
+:root{--bg:#f6f3ee;--ink:#22201c;--mut:#6d665c;--acc:#015089;--card:#fff;--line:#e3ddd3}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg)}
+#app{display:flex;flex-direction:column;height:100%}
+header{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--card);flex-wrap:wrap}
+header h1{font-size:16px;margin:0;font-weight:650}
+header .sub{font-size:12px;color:var(--mut)}
+nav{margin-left:auto;display:flex;gap:4px}
+nav button,.btn{border:1px solid var(--line);background:var(--card);padding:7px 12px;border-radius:8px;font:inherit;font-size:13px;cursor:pointer;color:var(--ink)}
+nav button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+main{flex:1;display:flex;min-height:0}
+#side{width:370px;max-width:100%;overflow:auto;padding:14px;border-right:1px solid var(--line);background:var(--card)}
+#stage{flex:1;position:relative;min-height:300px}
+#stage canvas{display:block;width:100%;height:100%}
+#hud{position:absolute;left:12px;right:12px;bottom:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#prog{flex:1;min-width:120px;height:6px;background:#0001;border-radius:4px;overflow:hidden}
+#prog i{display:block;height:100%;background:var(--acc);width:0;transition:width .3s}
+#modes{position:absolute;top:12px;right:12px;display:flex;gap:4px}
+.kicker{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--acc);font-weight:700}
+h2{font-size:19px;margin:4px 0 8px}
+p{line-height:1.45;font-size:14px;margin:6px 0}
+.tag{display:inline-block;background:#f1ebe2;border-radius:6px;padding:2px 7px;font-size:12px;font-weight:600;margin:2px 3px 2px 0;cursor:pointer}
+.tag.hw{background:#e6eef5}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+td{padding:5px 2px;border-bottom:1px solid var(--line);vertical-align:top}
+td:first-child{color:var(--mut);width:38%}
+.list .it{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;margin:5px 0;cursor:pointer;font-size:13px}
+.list .it:hover,.list .it.on{border-color:var(--acc);background:#f0f6fb}
+.list .it b{font-size:13px}
+.grp{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:12px 0 2px;font-weight:700}
+#labels{display:none;flex:1;overflow:auto;padding:16px;background:#fff}
+.sheet{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.lab{border:1px dashed #bbb;border-radius:6px;padding:10px;display:flex;gap:10px;align-items:center}
+.lab svg{width:96px;height:96px;flex:none}
+.lab .c{font-weight:800;font-size:15px}
+.lab .n{font-size:12px}
+.lab .m{font-size:11px;color:var(--mut)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.row input{flex:1;min-width:240px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:13px}
+#msg{font-size:12px;color:var(--mut)}
+@media (max-width:760px){
+  main{flex-direction:column-reverse}
+  #side{width:100%;max-height:46%;border-right:0;border-top:1px solid var(--line)}
+  nav{margin-left:0;width:100%}
+  nav button{flex:1}
+}
+</style>
+</head>
+<body>
+<div id="app">
+<header>
+  <div><h1>Family parte 2 · 3000 × 1000 × 369</h1><div class="sub">Roble Flama 19.3 mm · 39 piezas · 3 módulos + zoclo · 5 puertas · Johill</div></div>
+  <nav>
+    <button data-tab="armado" class="on">Armado</button>
+    <button data-tab="piezas">Piezas</button>
+    <button data-tab="etiquetas">Etiquetas QR</button>
+  </nav>
+</header>
+<main id="main">
+  <aside id="side"></aside>
+  <section id="stage">
+    <div id="modes"><button class="btn" id="mSala">Sala</button><button class="btn" id="mDib">Dibujo</button></div>
+    <div id="hud">
+      <button class="btn" id="bPrev">◀ Anterior</button>
+      <button class="btn pri" id="bPlay">▶ Reproducir</button>
+      <button class="btn" id="bNext">Siguiente ▶</button>
+      <div id="prog"><i></i></div>
+    </div>
+  </section>
+  <section id="labels">
+    <div class="row">
+      <input id="baseUrl" placeholder="Dirección pública de esta página">
+      <button class="btn" id="bApply">Actualizar QR</button>
+    </div>
+    <div id="msg"></div>
+    <div class="sheet" id="sheet"></div>
+  </section>
+</main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+// ---------- Datos (Family parte 2) ----------
+const PUBLIC_URL = "https://alanalcantara847-johill.github.io/muebles-/family-parte-2/";
+const P = [{"code": "LAT0101A", "id": 101, "name": "Lateral izquierdo", "desc": "Lateral · módulo 1", "med": "900 × 350 × 19.3", "size": [19.3, 900, 350.0], "pos": [-1490.35, 550.0, -10.0], "from": [-320, 0, 0], "step": 5, "vert": true, "corte": "899.1 × 349.6", "cantos": "3 cantos chapa natural 0.45: 900 350+350", "barr": "11 barrenos de cara Ø8 × 12 · 4 barrenos Ø5 × 10 para placa de bisagra", "maq": "—", "une": ["BAS0103A", "PUE0108A", "TAP0104A", "TRA0105A", "TRA0106A", "TRF0107A"]}, {"code": "LAT0102A", "id": 102, "name": "Lateral derecho", "desc": "Lateral · módulo 1", "med": "900 × 350 × 19.3", "size": [19.3, 900, 350.0], "pos": [-909.65, 550.0, -10.0], "from": [320, 0, 0], "step": 5, "vert": true, "corte": "899.1 × 349.6", "cantos": "3 cantos chapa natural 0.45: 900 350+350", "barr": "11 barrenos de cara Ø8 × 12", "maq": "—", "une": ["BAS0103A", "TAP0104A", "TRA0105A", "TRA0106A", "TRF0107A"]}, {"code": "BAS0103A", "id": 103, "name": "Base", "desc": "Base · módulo 1", "med": "561.4 × 350 × 19.3", "size": [561.4, 19.3, 350.0], "pos": [-1200.0, 109.65, -10.0], "from": [0, 320, 0], "step": 2, "vert": false, "corte": "561.4 × 349.6", "cantos": "1 canto chapa natural 0.45: 561.4", "barr": "6 barrenos de canto Ø8 × 22 · 3 barrenos de cara Ø8 × 12", "maq": "—", "une": ["LAT0101A", "LAT0102A", "TRA0105A"]}, {"code": "TAP0104A", "id": 104, "name": "Techo", "desc": "Tapa superior · módulo 1", "med": "561.4 × 350 × 19.3", "size": [561.4, 19.3, 350.0], "pos": [-1200.0, 990.35, -10.0], "from": [0, 450, 0], "step": 4, "vert": false, "corte": "561.4 × 349.6", "cantos": "1 canto chapa natural 0.45: 561.4", "barr": "6 barrenos de canto Ø8 × 22 · 6 barrenos de cara Ø8 × 12", "maq": "—", "une": ["LAT0101A", "LAT0102A", "TRA0106A", "TRF0107A"]}, {"code": "TRA0105A", "id": 105, "name": "Travesaño trasero inferior", "desc": "Travesaño trasero · módulo 1", "med": "561.4 × 80 × 19.3", "size": [561.4, 80.0, 19.3], "pos": [-1200.0, 159.3, -175.35], "from": [0, 0, -450], "step": 2, "vert": false, "corte": "561.4 × 80", "cantos": "Sin canto", "barr": "7 barrenos de canto Ø8 × 22", "maq": "—", "une": ["BAS0103A", "LAT0101A", "LAT0102A"]}, {"code": "TRA0106A", "id": 106, "name": "Travesaño trasero superior", "desc": "Travesaño trasero · módulo 1", "med": "561.4 × 80 × 19.3", "size": [561.4, 80.0, 19.3], "pos": [-1200.0, 940.7, -175.35], "from": [0, 0, -450], "step": 4, "vert": false, "corte": "561.4 × 80", "cantos": "Sin canto", "barr": "7 barrenos de canto Ø8 × 22", "maq": "—", "une": ["LAT0101A", "LAT0102A", "TAP0104A"]}, {"code": "TRF0107A", "id": 107, "name": "Travesaño frontal", "desc": "Travesaño frontal (bajo el techo) · módulo 1", "med": "561.4 × 50 × 19.3", "size": [561.4, 50.0, 19.3], "pos": [-1200.0, 955.7, 155.35], "from": [0, 0, 450], "step": 4, "vert": false, "corte": "561.4 × 49.6", "cantos": "1 canto chapa natural 0.45: 561.4", "barr": "5 barrenos de canto Ø8 × 22", "maq": "—", "une": ["LAT0101A", "LAT0102A", "TAP0104A"]}, {"code": "PUE0108A", "id": 108, "name": "Puerta", "desc": "Puerta sobrepuesta (bisagra izquierda) · módulo 1", "med": "893 × 596 × 19.3", "size": [596, 893, 19.3], "pos": [-1200.0, 548.5, 174.65], "from": [0, 0, 520], "step": 6, "vert": true, "corte": "892.1 × 595.1", "cantos": "4 cantos chapa natural 0.45: 893+893 596+596", "barr": "2 cazoletas Ø35 × 12 a 23 mm del canto", "maq": "—", "une": ["LAT0101A"]}, {"code": "LAT0201A", "id": 201, "name": "Lateral izquierdo", "desc": "Lateral · módulo 2", "med": "900 × 350 × 19.3", "size": [19.3, 900, 350.0], "pos": [-890.35, 550.0, -10.0], "from": [-320, 0, 0], "step": 5, "vert": true, "corte": "899.1 × 349.6", "cantos": "3 cantos chapa natural 0.45: 900 350+350", "barr": "11 barrenos de cara Ø8 × 12 · 4 barrenos Ø5 × 10 para placa de bisagra", "maq": "—", "une": ["BAS0203A", "PUE0209A", "TAP0204A", "TRA0205A", "TRA0206A", "TRF0207A"]}, {"code": "LAT0202A", "id": 202, "name": "Lateral derecho", "desc": "Lateral · módulo 2", "med": "900 × 350 × 19.3", "size": [19.3, 900, 350.0], "pos": [290.35, 550.0, -10.0], "from": [320, 0, 0], "step": 5, "vert": true, "corte": "899.1 × 349.6", "cantos": "3 cantos chapa natural 0.45: 900 350+350", "barr": "11 barrenos de cara Ø8 × 12 · 4 barrenos Ø5 × 10 para placa de bisagra", "maq": "—", "une": ["BAS0203A", "PUE0210A", "TAP0204A", "TRA0205A", "TRA0206A", "TRF0207A"]}, {"code": "BAS0203A", "id": 203, "name": "Base", "desc": "Base · módulo 2", "med": "1161.4 × 350 × 19.3", "size": [1161.4, 19.3, 350.0], "pos": [-300.0, 109.65, -10.0], "from": [0, 320, 0], "step": 2, "vert": false, "corte": "1161.4 × 349.6", "cantos": "1 canto chapa natural 0.45: 1161.4", "barr": "6 barrenos de canto Ø8 × 22 · 7 barrenos de cara Ø8 × 12", "maq": "—", "une": ["DIV0208A", "LAT0201A", "LAT0202A", "TRA0205A"]}, {"code": "TAP0204A", "id": 204, "name": "Techo", "desc": "Tapa superior · módulo 2", "med": "1161.4 × 350 × 19.3", "size": [1161.4, 19.3, 350.0], "pos": [-300.0, 990.35, -10.0], "from": [0, 450, 0], "step": 4, "vert": false, "corte": "1161.4 × 349.6", "cantos": "1 canto chapa natural 0.45: 1161.4", "barr": "6 barrenos de canto Ø8 × 22 · 11 barrenos de cara Ø8 × 12", "maq": "—", "une": ["DIV0208A", "LAT0201A", "LAT0202A", "TRA0206A", "TRF0207A"]}, {"code": "TRA0205A", "id": 205, "name": "Travesaño trasero inferior", "desc": "Travesaño trasero · módulo 2", "med": "1161.4 × 80 × 19.3", "size": [1161.4, 80.0, 19.3], "pos": [-300.0, 159.3, -175.35], "from": [0, 0, -450], "step": 2, "vert": false, "corte": "1161.4 × 80", "cantos": "Sin canto", "barr": "8 barrenos de canto Ø8 × 22", "maq": "—", "une": ["BAS0203A", "LAT0201A", "LAT0202A"]}, {"code": "TRA0206A", "id": 206, "name": "Travesaño trasero superior", "desc": "Travesaño trasero · módulo 2", "med": "1161.4 × 80 × 19.3", "size": [1161.4, 80.0, 19.3], "pos": [-300.0, 940.7, -175.35], "from": [0, 0, -450], "step": 4, "vert": false, "corte": "1161.4 × 80", "cantos": "Sin canto", "barr": "8 barrenos de canto Ø8 × 22", "maq": "—", "une": ["LAT0201A", "LAT0202A", "TAP0204A"]}, {"code": "TRF0207A", "id": 207, "name": "Travesaño frontal", "desc": "Travesaño frontal (bajo el techo) · módulo 2", "med": "1161.4 × 50 × 19.3", "size": [1161.4, 50.0, 19.3], "pos": [-300.0, 955.7, 155.35], "from": [0, 0, 450], "step": 4, "vert": false, "corte": "1161.4 × 49.6", "cantos": "1 canto chapa natural 0.45: 1161.4", "barr": "6 barrenos de canto Ø8 × 22", "maq": "—", "une": ["LAT0201A", "LAT0202A", "TAP0204A"]}, {"code": "DIV0208A", "id": 208, "name": "Divisor", "desc": "Divisor vertical al centro · módulo 2", "med": "861.4 × 311.4 × 19.3", "size": [19.3, 861.4, 311.4], "pos": [-300.0, 550.0, -10.0], "from": [0, 450, 0], "step": 3, "vert": true, "corte": "861.4 × 311", "cantos": "1 canto chapa natural 0.45: 861.4", "barr": "6 barrenos de canto Ø8 × 22", "maq": "—", "une": ["BAS0203A", "TAP0204A"]}, {"code": "PUE0209A", "id": 209, "name": "Puerta izquierda", "desc": "Puerta sobrepuesta (bisagra izquierda) · módulo 2", "med": "893 × 596.5 × 19.3", "size": [596.5, 893, 19.3], "pos": [-599.75, 548.5, 174.65], "from": [0, 0, 520], "step": 6, "vert": true, "corte": "892.1 × 595.6", "cantos": "4 cantos chapa natural 0.45: 893+893 596.5+596.5", "barr": "2 cazoletas Ø35 × 12 a 23 mm del canto", "maq": "—", "une": ["LAT0201A"]}, {"code": "PUE0210A", "id": 210, "name": "Puerta derecha", "desc": "Puerta sobrepuesta (bisagra derecha) · módulo 2", "med": "893 × 596.5 × 19.3", "size": [596.5, 893, 19.3], "pos": [-0.25, 548.5, 174.65], "from": [0, 0, 520], "step": 6, "vert": true, "corte": "892.1 × 595.6", "cantos": "4 cantos chapa natural 0.45: 893+893 596.5+596.5", "barr": "2 cazoletas Ø35 × 12 a 23 mm del canto", "maq": "—", "une": ["LAT0202A"]}, {"code": "LAT0301A", "id": 301, "name": "Lateral izquierdo", "desc": "Lateral · módulo 3", "med": "900 × 350 × 19.3", "size": [19.3, 900, 350.0], "pos": [309.65, 550.0, -10.0], "from": [-320, 0, 0], "step": 5, "vert": true, "corte": "899.1 × 349.6", "cantos": "3 cantos chapa natural 0.45: 900 350+350", "barr": "11 barrenos de cara Ø8 × 12 · 4 barrenos Ø5 × 10 para placa de bisagra", "maq": "—", "une": ["BAS0303A", "PUE0309A", "TAP0304A", "TRA0305A", "TRA0306A", "TRF0307A"]}, {"code": "LAT0302A", "id": 302, "name": "Lateral derecho", "desc": "Lateral · módulo 3", "med": "900 × 350 × 19.3", "size": [19.3, 900, 350.0], "pos": [1490.35, 550.0, -10.0], "from": [320, 0, 0], "step": 5, "vert": true, "corte": "899.1 × 349.6", "cantos": "3 cantos chapa natural 0.45: 900 350+350", "barr": "11 barrenos de cara Ø8 × 12 · 4 barrenos Ø5 × 10 para placa de bisagra", "maq": "—", "une": ["BAS0303A", "PUE0310A", "TAP0304A", "TRA0305A", "TRA0306A", "TRF0307A"]}, {"code": "BAS0303A", "id": 303, "name": "Base", "desc": "Base · módulo 3", "med": "1161.4 × 350 × 19.3", "size": [1161.4, 19.3, 350.0], "pos": [900.0, 109.65, -10.0], "from": [0, 320, 0], "step": 2, "vert": false, "corte": "1161.4 × 349.6", "cantos": "1 canto chapa natural 0.45: 1161.4", "barr": "6 barrenos de canto Ø8 × 22 · 7 barrenos de cara Ø8 × 12", "maq": "—", "une": ["DIV0308A", "LAT0301A", "LAT0302A", "TRA0305A"]}, {"code": "TAP0304A", "id": 304, "name": "Techo", "desc": "Tapa superior · módulo 3", "med": "1161.4 × 350 × 19.3", "size": [1161.4, 19.3, 350.0], "pos": [900.0, 990.35, -10.0], "from": [0, 450, 0], "step": 4, "vert": false, "corte": "1161.4 × 349.6", "cantos": "1 canto chapa natural 0.45: 1161.4", "barr": "6 barrenos de canto Ø8 × 22 · 11 barrenos de cara Ø8 × 12", "maq": "—", "une": ["DIV0308A", "LAT0301A", "LAT0302A", "TRA0306A", "TRF0307A"]}, {"code": "TRA0305A", "id": 305, "name": "Travesaño trasero inferior", "desc": "Travesaño trasero · módulo 3", "med": "1161.4 × 80 × 19.3", "size": [1161.4, 80.0, 19.3], "pos": [900.0, 159.3, -175.35], "from": [0, 0, -450], "step": 2, "vert": false, "corte": "1161.4 × 80", "cantos": "Sin canto", "barr": "8 barrenos de canto Ø8 × 22", "maq": "—", "une": ["BAS0303A", "LAT0301A", "LAT0302A"]}, {"code": "TRA0306A", "id": 306, "name": "Travesaño trasero superior", "desc": "Travesaño trasero · módulo 3", "med": "1161.4 × 80 × 19.3", "size": [1161.4, 80.0, 19.3], "pos": [900.0, 940.7, -175.35], "from": [0, 0, -450], "step": 4, "vert": false, "corte": "1161.4 × 80", "cantos": "Sin canto", "barr": "8 barrenos de canto Ø8 × 22", "maq": "—", "une": ["LAT0301A", "LAT0302A", "TAP0304A"]}, {"code": "TRF0307A", "id": 307, "name": "Travesaño frontal", "desc": "Travesaño frontal (bajo el techo) · módulo 3", "med": "1161.4 × 50 × 19.3", "size": [1161.4, 50.0, 19.3], "pos": [900.0, 955.7, 155.35], "from": [0, 0, 450], "step": 4, "vert": false, "corte": "1161.4 × 49.6", "cantos": "1 canto chapa natural 0.45: 1161.4", "barr": "6 barrenos de canto Ø8 × 22", "maq": "—", "une": ["LAT0301A", "LAT0302A", "TAP0304A"]}, {"code": "DIV0308A", "id": 308, "name": "Divisor", "desc": "Divisor vertical al centro · módulo 3", "med": "861.4 × 311.4 × 19.3", "size": [19.3, 861.4, 311.4], "pos": [900.0, 550.0, -10.0], "from": [0, 450, 0], "step": 3, "vert": true, "corte": "861.4 × 311", "cantos": "1 canto chapa natural 0.45: 861.4", "barr": "6 barrenos de canto Ø8 × 22", "maq": "—", "une": ["BAS0303A", "TAP0304A"]}, {"code": "PUE0309A", "id": 309, "name": "Puerta izquierda", "desc": "Puerta sobrepuesta (bisagra izquierda) · módulo 3", "med": "893 × 596.5 × 19.3", "size": [596.5, 893, 19.3], "pos": [600.25, 548.5, 174.65], "from": [0, 0, 520], "step": 6, "vert": true, "corte": "892.1 × 595.6", "cantos": "4 cantos chapa natural 0.45: 893+893 596.5+596.5", "barr": "2 cazoletas Ø35 × 12 a 23 mm del canto", "maq": "—", "une": ["LAT0301A"]}, {"code": "PUE0310A", "id": 310, "name": "Puerta derecha", "desc": "Puerta sobrepuesta (bisagra derecha) · módulo 3", "med": "893 × 596.5 × 19.3", "size": [596.5, 893, 19.3], "pos": [1199.75, 548.5, 174.65], "from": [0, 0, 520], "step": 6, "vert": true, "corte": "892.1 × 595.6", "cantos": "4 cantos chapa natural 0.45: 893+893 596.5+596.5", "barr": "2 cazoletas Ø35 × 12 a 23 mm del canto", "maq": "—", "une": ["LAT0302A"]}, {"code": "ZOC0401A", "id": 401, "name": "Zoclo frontal izquierdo", "desc": "Zoclo frontal 1800 (remetido 50)", "med": "1800 × 100 × 19.3", "size": [1800, 100, 19.3], "pos": [-600.0, 50.0, 105.35], "from": [0, -260, 0], "step": 1, "vert": false, "corte": "1799.6 × 100", "cantos": "1 canto chapa natural 0.45: 100", "barr": "8 barrenos de cara Ø8 × 12", "maq": "—", "une": ["ZOT0405A", "ZOT0406A", "ZOT0407A", "ZOT0408A"]}, {"code": "ZOC0402A", "id": 402, "name": "Zoclo frontal derecho", "desc": "Zoclo frontal 1200 (remetido 50)", "med": "1200 × 100 × 19.3", "size": [1200, 100, 19.3], "pos": [900.0, 50.0, 105.35], "from": [0, -260, 0], "step": 1, "vert": false, "corte": "1199.6 × 100", "cantos": "1 canto chapa natural 0.45: 100", "barr": "6 barrenos de cara Ø8 × 12", "maq": "—", "une": ["ZOT0409A", "ZOT0410A", "ZOT0411A"]}, {"code": "ZOC0403A", "id": 403, "name": "Zoclo trasero izquierdo", "desc": "Zoclo trasero 1800", "med": "1800 × 100 × 19.3", "size": [1800, 100, 19.3], "pos": [-600.0, 50.0, -175.35], "from": [0, -260, 0], "step": 1, "vert": false, "corte": "1800 × 100", "cantos": "Sin canto", "barr": "8 barrenos de cara Ø8 × 12", "maq": "—", "une": ["ZOT0405A", "ZOT0406A", "ZOT0407A", "ZOT0408A"]}, {"code": "ZOC0404A", "id": 404, "name": "Zoclo trasero derecho", "desc": "Zoclo trasero 1200", "med": "1200 × 100 × 19.3", "size": [1200, 100, 19.3], "pos": [900.0, 50.0, -175.35], "from": [0, -260, 0], "step": 1, "vert": false, "corte": "1200 × 100", "cantos": "Sin canto", "barr": "6 barrenos de cara Ø8 × 12", "maq": "—", "une": ["ZOT0409A", "ZOT0410A", "ZOT0411A"]}, {"code": "ZOT0405A", "id": 405, "name": "Travesaño de zoclo 1", "desc": "Travesaño de zoclo", "med": "261.4 × 100 × 19.3", "size": [19.3, 100, 261.4], "pos": [-1490.35, 50.0, -35.0], "from": [0, -260, 0], "step": 1, "vert": true, "corte": "261.4 × 100", "cantos": "Sin canto", "barr": "4 barrenos de canto Ø8 × 22", "maq": "—", "une": ["ZOC0401A", "ZOC0403A"]}, {"code": "ZOT0406A", "id": 406, "name": "Travesaño de zoclo 2", "desc": "Travesaño de zoclo", "med": "261.4 × 100 × 19.3", "size": [19.3, 100, 261.4], "pos": [-900.0, 50.0, -35.0], "from": [0, -260, 0], "step": 1, "vert": true, "corte": "261.4 × 100", "cantos": "Sin canto", "barr": "4 barrenos de canto Ø8 × 22", "maq": "—", "une": ["ZOC0401A", "ZOC0403A"]}, {"code": "ZOT0407A", "id": 407, "name": "Travesaño de zoclo 3", "desc": "Travesaño de zoclo", "med": "261.4 × 100 × 19.3", "size": [19.3, 100, 261.4], "pos": [-300.0, 50.0, -35.0], "from": [0, -260, 0], "step": 1, "vert": true, "corte": "261.4 × 100", "cantos": "Sin canto", "barr": "4 barrenos de canto Ø8 × 22", "maq": "—", "une": ["ZOC0401A", "ZOC0403A"]}, {"code": "ZOT0408A", "id": 408, "name": "Travesaño de zoclo 4", "desc": "Travesaño de zoclo", "med": "261.4 × 100 × 19.3", "size": [19.3, 100, 261.4], "pos": [290.35, 50.0, -35.0], "from": [0, -260, 0], "step": 1, "vert": true, "corte": "261.4 × 100", "cantos": "Sin canto", "barr": "4 barrenos de canto Ø8 × 22", "maq": "—", "une": ["ZOC0401A", "ZOC0403A"]}, {"code": "ZOT0409A", "id": 409, "name": "Travesaño de zoclo 5", "desc": "Travesaño de zoclo", "med": "261.4 × 100 × 19.3", "size": [19.3, 100, 261.4], "pos": [309.65, 50.0, -35.0], "from": [0, -260, 0], "step": 1, "vert": true, "corte": "261.4 × 100", "cantos": "Sin canto", "barr": "4 barrenos de canto Ø8 × 22", "maq": "—", "une": ["ZOC0402A", "ZOC0404A"]}, {"code": "ZOT0410A", "id": 410, "name": "Travesaño de zoclo 6", "desc": "Travesaño de zoclo", "med": "261.4 × 100 × 19.3", "size": [19.3, 100, 261.4], "pos": [900.0, 50.0, -35.0], "from": [0, -260, 0], "step": 1, "vert": true, "corte": "261.4 × 100", "cantos": "Sin canto", "barr": "4 barrenos de canto Ø8 × 22", "maq": "—", "une": ["ZOC0402A", "ZOC0404A"]}, {"code": "ZOT0411A", "id": 411, "name": "Travesaño de zoclo 7", "desc": "Travesaño de zoclo", "med": "261.4 × 100 × 19.3", "size": [19.3, 100, 261.4], "pos": [1490.35, 50.0, -35.0], "from": [0, -260, 0], "step": 1, "vert": true, "corte": "261.4 × 100", "cantos": "Sin canto", "barr": "4 barrenos de canto Ø8 × 22", "maq": "—", "une": ["ZOC0402A", "ZOC0404A"]}];
+// Clavacotes 8×30: [x,y,z,eje,paso,entra,recibe]
+const D = [[-1475.7, 110, -135.0, "x", 2, "BAS0103A", "LAT0101A"], [-1475.7, 110, -10.0, "x", 2, "BAS0103A", "LAT0101A"], [-1475.7, 110, 115.0, "x", 2, "BAS0103A", "LAT0101A"], [-924.3, 110, -135.0, "x", 2, "BAS0103A", "LAT0102A"], [-924.3, 110, -10.0, "x", 2, "BAS0103A", "LAT0102A"], [-924.3, 110, 115.0, "x", 2, "BAS0103A", "LAT0102A"], [-1475.7, 990, -135.0, "x", 4, "TAP0104A", "LAT0101A"], [-1475.7, 990, -10.0, "x", 4, "TAP0104A", "LAT0101A"], [-1475.7, 990, 115.0, "x", 4, "TAP0104A", "LAT0101A"], [-924.3, 990, -135.0, "x", 4, "TAP0104A", "LAT0102A"], [-924.3, 990, -10.0, "x", 4, "TAP0104A", "LAT0102A"], [-924.3, 990, 115.0, "x", 4, "TAP0104A", "LAT0102A"], [-1475.7, 139.3, -175, "x", 2, "TRA0105A", "LAT0101A"], [-1475.7, 179.3, -175, "x", 2, "TRA0105A", "LAT0101A"], [-924.3, 139.3, -175, "x", 2, "TRA0105A", "LAT0102A"], [-924.3, 179.3, -175, "x", 2, "TRA0105A", "LAT0102A"], [-1430.7, 124.3, -175, "y", 2, "TRA0105A", "BAS0103A"], [-1200.0, 124.3, -175, "y", 2, "TRA0105A", "BAS0103A"], [-969.3, 124.3, -175, "y", 2, "TRA0105A", "BAS0103A"], [-1475.7, 920.7, -175, "x", 4, "TRA0106A", "LAT0101A"], [-1475.7, 960.7, -175, "x", 4, "TRA0106A", "LAT0101A"], [-924.3, 920.7, -175, "x", 4, "TRA0106A", "LAT0102A"], [-924.3, 960.7, -175, "x", 4, "TRA0106A", "LAT0102A"], [-1430.7, 975.7, -175, "y", 4, "TRA0106A", "TAP0104A"], [-1200.0, 975.7, -175, "y", 4, "TRA0106A", "TAP0104A"], [-969.3, 975.7, -175, "y", 4, "TRA0106A", "TAP0104A"], [-1475.7, 955.7, 155.0, "x", 4, "TRF0107A", "LAT0101A"], [-924.3, 955.7, 155.0, "x", 4, "TRF0107A", "LAT0102A"], [-1430.7, 975.7, 155.0, "y", 4, "TRF0107A", "TAP0104A"], [-1200.0, 975.7, 155.0, "y", 4, "TRF0107A", "TAP0104A"], [-969.3, 975.7, 155.0, "y", 4, "TRF0107A", "TAP0104A"], [-875.7, 110, -135.0, "x", 2, "BAS0203A", "LAT0201A"], [-875.7, 110, -10.0, "x", 2, "BAS0203A", "LAT0201A"], [-875.7, 110, 115.0, "x", 2, "BAS0203A", "LAT0201A"], [275.7, 110, -135.0, "x", 2, "BAS0203A", "LAT0202A"], [275.7, 110, -10.0, "x", 2, "BAS0203A", "LAT0202A"], [275.7, 110, 115.0, "x", 2, "BAS0203A", "LAT0202A"], [-875.7, 990, -135.0, "x", 4, "TAP0204A", "LAT0201A"], [-875.7, 990, -10.0, "x", 4, "TAP0204A", "LAT0201A"], [-875.7, 990, 115.0, "x", 4, "TAP0204A", "LAT0201A"], [275.7, 990, -135.0, "x", 4, "TAP0204A", "LAT0202A"], [275.7, 990, -10.0, "x", 4, "TAP0204A", "LAT0202A"], [275.7, 990, 115.0, "x", 4, "TAP0204A", "LAT0202A"], [-875.7, 139.3, -175, "x", 2, "TRA0205A", "LAT0201A"], [-875.7, 179.3, -175, "x", 2, "TRA0205A", "LAT0201A"], [275.7, 139.3, -175, "x", 2, "TRA0205A", "LAT0202A"], [275.7, 179.3, -175, "x", 2, "TRA0205A", "LAT0202A"], [-830.7, 124.3, -175, "y", 2, "TRA0205A", "BAS0203A"], [-475.7, 124.3, -175, "y", 2, "TRA0205A", "BAS0203A"], [-120.7, 124.3, -175, "y", 2, "TRA0205A", "BAS0203A"], [230.7, 124.3, -175, "y", 2, "TRA0205A", "BAS0203A"], [-875.7, 920.7, -175, "x", 4, "TRA0206A", "LAT0201A"], [-875.7, 960.7, -175, "x", 4, "TRA0206A", "LAT0201A"], [275.7, 920.7, -175, "x", 4, "TRA0206A", "LAT0202A"], [275.7, 960.7, -175, "x", 4, "TRA0206A", "LAT0202A"], [-830.7, 975.7, -175, "y", 4, "TRA0206A", "TAP0204A"], [-475.7, 975.7, -175, "y", 4, "TRA0206A", "TAP0204A"], [-120.7, 975.7, -175, "y", 4, "TRA0206A", "TAP0204A"], [230.7, 975.7, -175, "y", 4, "TRA0206A", "TAP0204A"], [-875.7, 955.7, 155.0, "x", 4, "TRF0207A", "LAT0201A"], [275.7, 955.7, 155.0, "x", 4, "TRF0207A", "LAT0202A"], [-830.7, 975.7, 155.0, "y", 4, "TRF0207A", "TAP0204A"], [-475.7, 975.7, 155.0, "y", 4, "TRF0207A", "TAP0204A"], [-120.7, 975.7, 155.0, "y", 4, "TRF0207A", "TAP0204A"], [230.7, 975.7, 155.0, "y", 4, "TRF0207A", "TAP0204A"], [-299.65, 124.3, -115.7, "y", 3, "DIV0208A", "BAS0203A"], [-299.65, 124.3, -10.0, "y", 3, "DIV0208A", "BAS0203A"], [-299.65, 124.3, 95.7, "y", 3, "DIV0208A", "BAS0203A"], [-299.65, 975.7, -115.7, "y", 3, "DIV0208A", "TAP0204A"], [-299.65, 975.7, -10.0, "y", 3, "DIV0208A", "TAP0204A"], [-299.65, 975.7, 95.7, "y", 3, "DIV0208A", "TAP0204A"], [324.3, 110, -135.0, "x", 2, "BAS0303A", "LAT0301A"], [324.3, 110, -10.0, "x", 2, "BAS0303A", "LAT0301A"], [324.3, 110, 115.0, "x", 2, "BAS0303A", "LAT0301A"], [1475.7, 110, -135.0, "x", 2, "BAS0303A", "LAT0302A"], [1475.7, 110, -10.0, "x", 2, "BAS0303A", "LAT0302A"], [1475.7, 110, 115.0, "x", 2, "BAS0303A", "LAT0302A"], [324.3, 990, -135.0, "x", 4, "TAP0304A", "LAT0301A"], [324.3, 990, -10.0, "x", 4, "TAP0304A", "LAT0301A"], [324.3, 990, 115.0, "x", 4, "TAP0304A", "LAT0301A"], [1475.7, 990, -135.0, "x", 4, "TAP0304A", "LAT0302A"], [1475.7, 990, -10.0, "x", 4, "TAP0304A", "LAT0302A"], [1475.7, 990, 115.0, "x", 4, "TAP0304A", "LAT0302A"], [324.3, 139.3, -175, "x", 2, "TRA0305A", "LAT0301A"], [324.3, 179.3, -175, "x", 2, "TRA0305A", "LAT0301A"], [1475.7, 139.3, -175, "x", 2, "TRA0305A", "LAT0302A"], [1475.7, 179.3, -175, "x", 2, "TRA0305A", "LAT0302A"], [369.3, 124.3, -175, "y", 2, "TRA0305A", "BAS0303A"], [724.3, 124.3, -175, "y", 2, "TRA0305A", "BAS0303A"], [1079.3, 124.3, -175, "y", 2, "TRA0305A", "BAS0303A"], [1430.7, 124.3, -175, "y", 2, "TRA0305A", "BAS0303A"], [324.3, 920.7, -175, "x", 4, "TRA0306A", "LAT0301A"], [324.3, 960.7, -175, "x", 4, "TRA0306A", "LAT0301A"], [1475.7, 920.7, -175, "x", 4, "TRA0306A", "LAT0302A"], [1475.7, 960.7, -175, "x", 4, "TRA0306A", "LAT0302A"], [369.3, 975.7, -175, "y", 4, "TRA0306A", "TAP0304A"], [724.3, 975.7, -175, "y", 4, "TRA0306A", "TAP0304A"], [1079.3, 975.7, -175, "y", 4, "TRA0306A", "TAP0304A"], [1430.7, 975.7, -175, "y", 4, "TRA0306A", "TAP0304A"], [324.3, 955.7, 155.0, "x", 4, "TRF0307A", "LAT0301A"], [1475.7, 955.7, 155.0, "x", 4, "TRF0307A", "LAT0302A"], [369.3, 975.7, 155.0, "y", 4, "TRF0307A", "TAP0304A"], [724.3, 975.7, 155.0, "y", 4, "TRF0307A", "TAP0304A"], [1079.3, 975.7, 155.0, "y", 4, "TRF0307A", "TAP0304A"], [1430.7, 975.7, 155.0, "y", 4, "TRF0307A", "TAP0304A"], [900.35, 124.3, -115.7, "y", 3, "DIV0308A", "BAS0303A"], [900.35, 124.3, -10.0, "y", 3, "DIV0308A", "BAS0303A"], [900.35, 124.3, 95.7, "y", 3, "DIV0308A", "BAS0303A"], [900.35, 975.7, -115.7, "y", 3, "DIV0308A", "TAP0304A"], [900.35, 975.7, -10.0, "y", 3, "DIV0308A", "TAP0304A"], [900.35, 975.7, 95.7, "y", 3, "DIV0308A", "TAP0304A"], [-1490, 25.0, 90.7, "z", 1, "ZOT0405A", "ZOC0401A"], [-1490, 75.0, 90.7, "z", 1, "ZOT0405A", "ZOC0401A"], [-1490, 25.0, -160.7, "z", 1, "ZOT0405A", "ZOC0403A"], [-1490, 75.0, -160.7, "z", 1, "ZOT0405A", "ZOC0403A"], [-899.65, 25.0, 90.7, "z", 1, "ZOT0406A", "ZOC0401A"], [-899.65, 75.0, 90.7, "z", 1, "ZOT0406A", "ZOC0401A"], [-899.65, 25.0, -160.7, "z", 1, "ZOT0406A", "ZOC0403A"], [-899.65, 75.0, -160.7, "z", 1, "ZOT0406A", "ZOC0403A"], [-299.65, 25.0, 90.7, "z", 1, "ZOT0407A", "ZOC0401A"], [-299.65, 75.0, 90.7, "z", 1, "ZOT0407A", "ZOC0401A"], [-299.65, 25.0, -160.7, "z", 1, "ZOT0407A", "ZOC0403A"], [-299.65, 75.0, -160.7, "z", 1, "ZOT0407A", "ZOC0403A"], [290.7, 25.0, 90.7, "z", 1, "ZOT0408A", "ZOC0401A"], [290.7, 75.0, 90.7, "z", 1, "ZOT0408A", "ZOC0401A"], [290.7, 25.0, -160.7, "z", 1, "ZOT0408A", "ZOC0403A"], [290.7, 75.0, -160.7, "z", 1, "ZOT0408A", "ZOC0403A"], [310, 25.0, 90.7, "z", 1, "ZOT0409A", "ZOC0402A"], [310, 75.0, 90.7, "z", 1, "ZOT0409A", "ZOC0402A"], [310, 25.0, -160.7, "z", 1, "ZOT0409A", "ZOC0404A"], [310, 75.0, -160.7, "z", 1, "ZOT0409A", "ZOC0404A"], [900.35, 25.0, 90.7, "z", 1, "ZOT0410A", "ZOC0402A"], [900.35, 75.0, 90.7, "z", 1, "ZOT0410A", "ZOC0402A"], [900.35, 25.0, -160.7, "z", 1, "ZOT0410A", "ZOC0404A"], [900.35, 75.0, -160.7, "z", 1, "ZOT0410A", "ZOC0404A"], [1490.7, 25.0, 90.7, "z", 1, "ZOT0411A", "ZOC0402A"], [1490.7, 75.0, 90.7, "z", 1, "ZOT0411A", "ZOC0402A"], [1490.7, 25.0, -160.7, "z", 1, "ZOT0411A", "ZOC0404A"], [1490.7, 75.0, -160.7, "z", 1, "ZOT0411A", "ZOC0404A"]];
+const STEPS = [{"t": "Revisa tus piezas", "x": "Confirma que tienes las 39 piezas (3 módulos y el zoclo), 139 clavacotes de madera de 8 × 30, 10 bisagras rectas de cazoleta 35 con placa y tornillos. Necesitas pegamento blanco, mazo de hule y prensas.", "hl": []}, {"t": "Zoclo", "x": "Arma el zoclo en dos tramos: ZOC0401A + ZOC0403A (1800) con los travesaños ZOT0405A a ZOT0408A, y ZOC0402A + ZOC0404A (1200) con ZOT0409A a ZOT0411A. Pegamento y clavacotes en los cantos de los travesaños; el zoclo frontal lleva la cara barrenada hacia atrás. Une los dos tramos por los travesaños dobles.", "hl": ["ZOC0401A", "ZOC0402A", "ZOC0403A", "ZOC0404A", "ZOT0405A", "ZOT0406A", "ZOT0407A", "ZOT0408A", "ZOT0409A", "ZOT0410A", "ZOT0411A"]}, {"t": "Bases y travesaños inferiores", "x": "En cada módulo, mete clavacotes con pegamento en el canto del travesaño trasero inferior y encájalo en la base (cara barrenada hacia arriba, canto con chapa al frente).", "hl": ["BAS0103A", "TRA0105A", "BAS0203A", "TRA0205A", "BAS0303A", "TRA0305A"]}, {"t": "Divisores", "x": "En los módulos de 1200, clava el divisor DIV0208A / DIV0308A al centro de la base, con el canto con chapa al frente.", "hl": ["DIV0208A", "DIV0308A"]}, {"t": "Techos y travesaños", "x": "Arma cada techo con su travesaño trasero superior y su travesaño frontal (chapa abajo) y colócalo sobre el divisor y los travesaños.", "hl": ["TAP0104A", "TRA0106A", "TRF0107A", "TAP0204A", "TRA0206A", "TRF0207A", "TAP0304A", "TRA0306A", "TRF0307A"]}, {"t": "Laterales", "x": "Coloca los laterales con la cara barrenada hacia dentro y el canto con chapa al frente. Prensa, revisa escuadra y limpia el pegamento. Después une los tres módulos entre sí con tornillo y fíjalos al zoclo.", "hl": ["LAT0101A", "LAT0102A", "LAT0201A", "LAT0202A", "LAT0301A", "LAT0302A"]}, {"t": "Bisagras y puertas", "x": "Atornilla las placas en los barrenos de 5 mm de los laterales (a 37 mm del frente). Mete las bisagras en las cazoletas de las 5 puertas, engánchalas y ajusta: 2 mm a los lados y 3 mm entre puertas. El módulo de 600 abre a la izquierda.", "hl": ["PUE0108A", "PUE0209A", "PUE0210A", "PUE0309A", "PUE0310A"]}];
+const NCLAV = 139, NBIS = 10;
+const GRP = {1:"Módulo 1 · 600",2:"Módulo 2 · 1200",3:"Módulo 3 · 1200",4:"Zoclo"};
+
+// ---------- Escena ----------
+const stage=document.getElementById('stage');
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+stage.prepend(renderer.domElement);
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(36,1,1,20000);
+cam.position.set(900,1500,3900);
+const ctl=new THREE.OrbitControls(cam,renderer.domElement);
+ctl.target.set(0,420,0);ctl.enableDamping=true;ctl.maxPolarAngle=Math.PI*0.49;ctl.minDistance=500;ctl.maxDistance=9000;
+scene.add(new THREE.HemisphereLight(0xfff6ea,0x8a7a66,0.78));
+const sun=new THREE.DirectionalLight(0xffffff,0.72);sun.position.set(1400,2600,1900);sun.castShadow=true;
+sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-2200,right:2200,top:2200,bottom:-2200,near:10,far:9000});scene.add(sun);
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(12000,12000),new THREE.MeshStandardMaterial({color:0xe9e2d6,roughness:1}));
+floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;scene.add(floor);
+
+// roble procedural (veta)
+function woodTex(vertical){
+  const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d');
+  g.fillStyle='#c9a77c';g.fillRect(0,0,256,256);
+  for(let i=0;i<70;i++){
+    const y=Math.random()*256, a=.05+Math.random()*.12;
+    g.strokeStyle=`rgba(${110+Math.random()*30|0},${75+Math.random()*20|0},${40+Math.random()*15|0},${a})`;
+    g.lineWidth=.6+Math.random()*2.2;g.beginPath();g.moveTo(0,y);
+    for(let x=0;x<=256;x+=32)g.lineTo(x,y+Math.sin(x/40+i)*2.2);g.stroke();
+  }
+  const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;
+  if(vertical){t.center.set(.5,.5);t.rotation=Math.PI/2;}
+  return t;
+}
+const texH=woodTex(false),texV=woodTex(true);
+const meshes={};
+P.forEach(p=>{
+  p.grp=+String(p.id)[0];
+  const geo=new THREE.BoxGeometry(...p.size);
+  const mat=new THREE.MeshStandardMaterial({map:p.vert?texV:texH,roughness:.65,transparent:true});
+  const m=new THREE.Mesh(geo,mat);m.castShadow=m.receiveShadow=true;
+  const ed=new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color:0x3b2f22,transparent:true,opacity:.5}));
+  m.add(ed);m.userData={p,ed};
+  const c=document.createElement('canvas');c.width=256;c.height=64;const g=c.getContext('2d');
+  g.fillStyle='rgba(34,32,28,.88)';g.beginPath();g.roundRect?g.roundRect(0,0,256,64,14):g.rect(0,0,256,64);g.fill();
+  g.fillStyle='#fff';g.font='bold 30px system-ui,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(p.code,128,33);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false}));
+  sp.scale.set(240,60,1);sp.position.set(0,p.size[1]/2+40,0);sp.renderOrder=10;sp.visible=false;m.add(sp);m.userData.sp=sp;
+  scene.add(m);meshes[p.code]=m;
+});
+const dowels=D.map(d=>{
+  const m=new THREE.Mesh(new THREE.CylinderGeometry(4,4,30,12),new THREE.MeshStandardMaterial({color:0xe8cfa0,roughness:.8,transparent:true}));
+  if(d[3]==='x')m.rotation.z=Math.PI/2;else if(d[3]==='z')m.rotation.x=Math.PI/2;
+  m.position.set(d[0],d[1],d[2]);m.userData={step:d[4],a:d[5],b:d[6]};scene.add(m);return m;
+});
+
+// ---------- Estado ----------
+let tab='armado',step=0,sel=null,playing=null,drawMode=false;
+const anim=[];
+function lerp(a,b,t){return a+(b-a)*t}
+function ease(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2}
+
+function layout(animate){
+  anim.length=0;
+  P.forEach(p=>{
+    const m=meshes[p.code];let target,vis=true,op=1;
+    if(tab==='piezas'){target=p.pos;op=sel&&sel!==p.code?0.12:1;}
+    else if(step===0){target=[p.pos[0]+p.from[0]*0.9,p.pos[1]+p.from[1]*0.6,p.pos[2]+p.from[2]*0.9];}
+    else{vis=p.step<=step;target=p.pos;}
+    m.visible=vis;
+    const hl=(tab==='armado'&&STEPS[step].hl.includes(p.code))||(tab==='piezas'&&sel===p.code);
+    m.material.opacity=op;m.material.depthWrite=op===1;m.userData.ed.material.opacity=op===1?.5:.12;
+    m.material.emissive=new THREE.Color(hl?0x015089:0x000000);m.material.emissiveIntensity=hl?.3:0;
+    m.userData.sp.visible=(tab==='piezas'&&sel===p.code);
+    if(drawMode){m.material.map=null;m.material.color.set(hl?0xcfe3f2:0xffffff);}
+    else{m.material.map=p.vert?texV:texH;m.material.color.set(0xffffff);}
+    m.material.needsUpdate=true;
+    if(animate&&tab==='armado'&&p.step===step&&step>0){
+      const s=[p.pos[0]+p.from[0],p.pos[1]+p.from[1],p.pos[2]+p.from[2]];m.position.set(...s);anim.push({m,s,t:target,t0:performance.now()});
+    }else m.position.set(...target);
+  });
+  dowels.forEach(d=>{
+    if(tab==='piezas'){d.visible=!sel||d.userData.a===sel||d.userData.b===sel;}
+    else d.visible=step>0&&d.userData.step<=step;
+    d.material.color.set(drawMode?0x999999:0xe8cfa0);
+  });
+  scene.background=new THREE.Color(drawMode?0xffffff:0xf2ece3);floor.visible=!drawMode;
+  document.querySelector('#prog i').style.width=(step/(STEPS.length-1)*100)+'%';
+}
+
+function lista(){
+  let h='',g=0;
+  P.forEach(x=>{if(x.grp!==g){g=x.grp;h+=`<div class="grp">${GRP[g]}</div>`;}
+    h+=`<div class="it ${x.code===sel?'on':''}" data-code="${x.code}"><span><b>${x.code}</b> · ${x.name}</span><span>${x.med}</span></div>`;});
+  return `<div class="list">${h}</div>`;
+}
+function renderSide(){
+  const s=document.getElementById('side');
+  if(tab==='armado'){
+    const st=STEPS[step];const nd=D.filter(d=>d[4]===step).length;
+    s.innerHTML=`<div class="kicker">Paso ${step} de ${STEPS.length-1}</div><h2>${st.t}</h2><p>${st.x}</p>
+      ${st.hl.map(c=>`<span class="tag" data-code="${c}">${c}</span>`).join('')}
+      ${nd?`<span class="tag hw">Clavacotes 8×30 · ${nd}</span>`:''}
+      ${step===0?lista()+`<div class="list"><div class="it"><span><b>Clavacote de madera</b> 8 × 30</span><span>× ${NCLAV}</span></div><div class="it"><span><b>Bisagra recta</b> cazoleta 35</span><span>× ${NBIS}</span></div></div>`:''}`;
+  }else if(tab==='piezas'){
+    const p=P.find(x=>x.code===sel);
+    s.innerHTML=(p?`<div class="kicker">Pieza · paso ${p.step} del armado</div><h2>${p.code} · ${p.name}</h2>
+      <table><tr><td>Descripción</td><td>${p.desc}</td></tr><tr><td>Medida final</td><td>${p.med} mm</td></tr>
+      <tr><td>Medida de corte</td><td>${p.corte} mm</td></tr>
+      <tr><td>Material</td><td>Roble Flama 19.3 mm · veta al largo</td></tr>
+      <tr><td>Cantos</td><td>${p.cantos}</td></tr><tr><td>Barrenos</td><td>${p.barr}</td></tr>
+      <tr><td>Se une con</td><td>${p.une.length?p.une.map(c=>`<span class="tag" data-code="${c}">${c}</span>`).join(''):'Va suelta'}</td></tr></table>
+      <button class="btn" data-step="${p.step}">Ver su paso de armado</button>`:`<h2>Piezas del mueble</h2><p>Toca una pieza para ver su ficha. Cada QR de etiqueta abre aquí la pieza correspondiente.</p>`)+lista();
+  }
+}
+document.getElementById('side').addEventListener('click',e=>{
+  const c=e.target.closest('[data-code]');if(c){location.hash=c.dataset.code;return;}
+  const b=e.target.closest('[data-step]');if(b){step=+b.dataset.step;setTab('armado',true);}
+});
+
+function setTab(t,anim){
+  tab=t;document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+  const lab=t==='etiquetas';
+  document.getElementById('labels').style.display=lab?'block':'none';
+  document.getElementById('stage').style.display=lab?'none':'block';
+  document.getElementById('side').style.display=lab?'none':'block';
+  document.getElementById('hud').style.display=t==='armado'?'flex':'none';
+  if(lab)buildLabels();else{renderSide();layout(anim);resize();}
+}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{stopPlay();if(b.dataset.tab==='piezas'){sel=null;}location.hash=b.dataset.tab;});
+
+function go(n){step=Math.max(0,Math.min(STEPS.length-1,n));renderSide();layout(true);}
+function stopPlay(){if(playing){clearInterval(playing);playing=null;document.getElementById('bPlay').textContent='▶ Reproducir';}}
+document.getElementById('bPrev').onclick=()=>{stopPlay();go(step-1)};
+document.getElementById('bNext').onclick=()=>{stopPlay();go(step+1)};
+document.getElementById('bPlay').onclick=()=>{
+  if(playing){stopPlay();return;}
+  if(step===STEPS.length-1)go(0);
+  document.getElementById('bPlay').textContent='❚❚ Pausa';
+  playing=setInterval(()=>{if(step>=STEPS.length-1)stopPlay();else go(step+1);},2800);
+};
+document.getElementById('mSala').onclick=()=>{drawMode=false;layout(false)};
+document.getElementById('mDib').onclick=()=>{drawMode=true;layout(false)};
+addEventListener('keydown',e=>{if(tab!=='armado')return;if(e.key==='ArrowRight'){stopPlay();go(step+1)}if(e.key==='ArrowLeft'){stopPlay();go(step-1)}});
+
+function route(){
+  const h=decodeURIComponent(location.hash.slice(1));
+  const p=P.find(x=>x.code.toLowerCase()===h.toLowerCase()||String(x.id)===h);
+  if(p){sel=p.code;setTab('piezas');frame(p);}
+  else if(h==='piezas'){setTab('piezas');}
+  else if(h==='etiquetas'){setTab('etiquetas');}
+  else setTab('armado',false);
+}
+function frame(p){ctl.target.set(p.pos[0]*0.7,Math.max(150,p.pos[1]),p.pos[2]*0.5);}
+addEventListener('hashchange',route);
+
+function getBase(){
+  let v='';try{v=localStorage.getItem('family2_base')||''}catch(e){}
+  if(!v)v=PUBLIC_URL.startsWith('http')?PUBLIC_URL:location.href.split('#')[0];
+  return v.split('#')[0];
+}
+function buildLabels(){
+  const inp=document.getElementById('baseUrl');if(!inp.value)inp.value=getBase();
+  const base=inp.value.trim().split('#')[0];
+  const qa=qrcode(0,'M');qa.addData(base+'#armado');qa.make();
+  const full=`<div class="lab" style="border-style:solid;border-color:#015089">${qa.createSvgTag({cellSize:3,margin:1,scalable:true})}<div><div class="c">ARMADO</div><div class="n">Family parte 2 completo</div><div class="m">Armado paso a paso · ${P.length} piezas</div></div></div>`;
+  document.getElementById('sheet').innerHTML=full+P.map(p=>{
+    const q=qrcode(0,'M');q.addData(base+'#'+p.code);q.make();
+    return `<div class="lab">${q.createSvgTag({cellSize:3,margin:1,scalable:true})}<div><div class="c">${p.code}</div><div class="n">${p.name}</div><div class="m">${p.med} mm · Family parte 2</div></div></div>`;
+  }).join('');
+  document.getElementById('msg').textContent='Cada QR abre: '+base+'#CÓDIGO';
+}
+document.getElementById('bApply').onclick=()=>{try{localStorage.setItem('family2_base',document.getElementById('baseUrl').value.trim())}catch(e){}buildLabels();};
+
+function resize(){const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();}
+addEventListener('resize',resize);
+(function loop(){
+  requestAnimationFrame(loop);
+  for(let i=anim.length-1;i>=0;i--){const a=anim[i];let t=Math.min(1,(performance.now()-a.t0)/900);const k=ease(t);
+    a.m.position.set(lerp(a.s[0],a.t[0],k),lerp(a.s[1],a.t[1],k),lerp(a.s[2],a.t[2],k));if(t>=1)anim.splice(i,1);}
+  ctl.update();renderer.render(scene,cam);
+})();
+resize();route();
+</script>
+</body>
+</html>
