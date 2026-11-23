@@ -1,0 +1,227 @@
+{
+"proyecto": "BURO500",
+"mueble": "BURO REDONDO 500",
+"visor": "https://alanalcantara847-johill.github.io/muebles-/buro-redondo-500/",
+"filas": [
+[
+"BURO500",
+"ANI0401A",
+"Anillo capa exterior",
+"20-1",
+"1199 x 588",
+"",
+"",
+0,
+"https://alanalcantara847-johill.github.io/muebles-/buro-redondo-500/"
+],
+[
+"BURO500",
+"ANI0402A",
+"Anillo capa interior",
+"20-2",
+"1128 x 588",
+"",
+"",
+0,
+"https://alanalcantara847-johill.github.io/muebles-/buro-redondo-500/"
+],
+[
+"BURO500",
+"FRE0403A",
+"Frente cajon superior capa ext",
+"20-3",
+"407 x 290",
+"",
+"",
+0,
+"https://alanalcantara847-johill.github.io/muebles-/buro-redondo-500/"
+],
+[
+"BURO500",
+"FRE0404A",
+"Frente cajon superior capa int",
+"20-4",
+"384 x 290",
+"",
+"",
+0,
+"https://alanalcantara847-johill.github.io/muebles-/buro-redondo-500/"
+],
+[
+"BURO500",
+"FRE0405A",
+"Frente cajon inferior capa ext",
+"20-5",
+"407 x 290",
+"",
+"",
+0,
+"https://alanalcantara847-johill.github.io/muebles-/buro-redondo-500/"
+],
+[
+"BURO500",
+"FRE0406A",
+"Frente cajon inferior capa int",
+"20-6",
+"384 x 290",
+"",
+"",
+0,
+"https://alanalcantara847-johill.github.io/muebles-/buro-redondo-500/"
+],
+[
+"BURO500",
+"PIS0409A",
+"Piso redondo",
+"20-7",
+"445 x 445",
+"",
+"",
+0,
+"https://alanalcantara847-johill.github.io/muebles-/buro-redondo-500/"
+],
+[
+"BURO500",
+"TEC0410A",
+"Techo redondo",
+"20-8",
+"445 x 445",
+"",
+"",
+0,
+"https://alanalcantara847-johill.github.io/muebles-/buro-redondo-500/"
+],
+[
+"BURO500",
+"LAT0411A",
+"Costado interior izq",
+"20-9",
+"305 x 558",
+"",
+"",
+0,
+"https://alanalcantara847-johill.github.io/muebles-/buro-redondo-500/"
+],
+[
+"BURO500",
+"LAT0412A",
+"Costado interior der",
+"20-10",
+"305 x 558",
+"",
+"",
+0,
+"https://alanalcantara847-johill.github.io/muebles-/buro-redondo-500/"
+],
+[
+"BURO500",
+"BCJ0413A",
+"Base cajon superior",
+"20-11",
+"254 x 250",
+"",
+"",
+0,
+"https://alanalcantara847-johill.github.io/muebles-/buro-redondo-500/"
+],
+[
+"BURO500",
+"COS0414A",
+"Costado cajon superior izq",
+"20-12",
+"250 x 145",
+"",
+"",
+0,
+"https://alanalcantara847-johill.github.io/muebles-/buro-redondo-500/"
+],
+[
+"BURO500",
+"COS0415A",
+"Costado cajon superior der",
+"20-13",
+"250 x 145",
+"",
+"",
+0,
+"https://alanalcantara847-johill.github.io/muebles-/buro-redondo-500/"
+],
+[
+"BURO500",
+"FCJ0416A",
+"Frente int cajon superior",
+"20-14",
+"224 x 145",
+"",
+"",
+0,
+"https://alanalcantara847-johill.github.io/muebles-/buro-redondo-500/"
+],
+[
+"BURO500",
+"TCJ0417A",
+"Trasero cajon superior",
+"20-15",
+"224 x 145",
+"",
+"",
+0,
+"https://alanalcantara847-johill.github.io/muebles-/buro-redondo-500/"
+],
+[
+"BURO500",
+"BCJ0418A",
+"Base cajon inferior",
+"20-16",
+"254 x 250",
+"",
+"",
+0,
+"https://alanalcantara847-johill.github.io/muebles-/buro-redondo-500/"
+],
+[
+"BURO500",
+"COS0419A",
+"Costado cajon inferior izq",
+"20-17",
+"250 x 145",
+"",
+"",
+0,
+"https://alanalcantara847-johill.github.io/muebles-/buro-redondo-500/"
+],
+[
+"BURO500",
+"COS0420A",
+"Costado cajon inferior der",
+"20-18",
+"250 x 145",
+"",
+"",
+0,
+"https://alanalcantara847-johill.github.io/muebles-/buro-redondo-500/"
+],
+[
+"BURO500",
+"FCJ0421A",
+"Frente int cajon inferior",
+"20-19",
+"224 x 145",
+"",
+"",
+0,
+"https://alanalcantara847-johill.github.io/muebles-/buro-redondo-500/"
+],
+[
+"BURO500",
+"TCJ0422A",
+"Trasero cajon inferior",
+"20-20",
+"224 x 145",
+"",
+"",
+0,
+"https://alanalcantara847-johill.github.io/muebles-/buro-redondo-500/"
+]
+]
+}

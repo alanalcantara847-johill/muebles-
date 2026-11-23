@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Buró Redondo 500 3D</title>
+<style>
+/* VOICE: taller, claro y directo
+   IDEA: hoja de armado de Johill con el mueble girando
+   PICTURE: el buró en 3D que se explota y abre
+   COLOUR and TYPE: azul Johill #015089, MDF, Inter
+   LAYOUT: visor grande + panel de piezas */
+:root{color-scheme:light dark;--bg:light-dark(#f4f7fb,#0e1620);--ink:light-dark(#16202a,#e7edf4);--pan:light-dark(#ffffff,#152230);--line:light-dark(#d5dfea,#26384a);--az:#015089;--az2:light-dark(#015089,#5aa7e0)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,system-ui,Arial,sans-serif;overflow-x:clip}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px;padding:14px max(3vw,14px);background:var(--az);color:#fff}
+header b{font-size:20px;letter-spacing:.5px}header span{opacity:.85;font-size:14px}
+main{display:grid;grid-template-columns:minmax(0,1fr) 340px;min-height:calc(100vh - 52px)}
+#v{position:relative;min-height:460px}#v canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+aside{background:var(--pan);border-left:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:14px;max-height:calc(100vh - 52px);overflow:auto}
+label{display:block;font-weight:600;font-size:14px}
+input[type=range]{width:100%;height:32px;accent-color:var(--az)}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;font-size:14px;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+button:focus-visible,li:focus-visible{outline:2px solid var(--az2);outline-offset:2px}
+#info{border:1px solid var(--line);border-radius:10px;padding:12px;min-height:84px}
+#info h2{margin:0 0 4px;font-size:17px;color:var(--az2)}#info p{margin:0;font-size:14px}
+ul{list-style:none;margin:0;padding:0}
+li{display:grid;grid-template-columns:86px minmax(0,1fr);gap:8px;padding:8px 6px;border-bottom:1px solid var(--line);cursor:pointer;font-size:13.5px}
+li b{color:var(--az2)}li.sel{background:light-dark(#e6eef6,#1d3347)}
+.hint{font-size:13px;opacity:.75}
+.chk{margin:0 0 8px;padding:8px 10px;border-radius:8px;font-size:14px}.chk.ok{background:#d6f0dc;color:#1e7e34}.chk.no{background:#f8d7da;color:#a12a2a}.chk.w{background:#fff3cd;color:#6b5200}.chk a{color:inherit;font-weight:600}
+#arm{border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:8px}
+#pPlay{background:var(--az);color:#fff;border-color:var(--az);font-weight:600}
+.paso{margin:0;font-size:14px;min-height:40px}.paso b{color:var(--az2)}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--az);transition:width .3s}
+@media(max-width:820px){#v #info{position:absolute;top:8px;left:8px;right:8px;z-index:2;min-height:0;padding:8px 10px;background:color-mix(in srgb,var(--pan) 92%,transparent)}#v #info .hint{display:none}main{grid-template-columns:1fr}#v{min-height:58vh}aside{border-left:0;border-top:1px solid var(--line);max-height:none}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header><a href="../" style="color:#fff;text-decoration:none"><b>JOHILL</b></a><b>BURÓ REDONDO 500</b><span>Ø500 × 600 · 2 cajones · MDF 15 rauteado (fresa T6, 13 prof., a cada 10) · cubierta Corian 12</span></header>
+<main>
+  <div id="v"></div>
+  <aside>
+    <div id="info"><h2>Toca una pieza</h2><p class="hint">Arrastra para girar, pellizca o usa la rueda para acercar.</p></div>
+    <div><label for="ex">Explotar</label><input id="ex" type="range" min="0" max="1" step="0.01" value="0"></div>
+    <div><label for="ab">Abrir cajones</label><input id="ab" type="range" min="0" max="1" step="0.01" value="0"></div>
+    <div id="arm"><label>Armado paso a paso</label>
+      <div class="btns"><button id="pPrev" aria-label="Paso anterior">◀</button><button id="pPlay">▶ Reproducir armado</button><button id="pNext" aria-label="Paso siguiente">▶|</button></div>
+      <p id="pTxt" class="paso">Paso 0 de 0</p><div class="bar"><i id="pBar"></i></div></div>
+    <div class="btns"><button id="b0">Armado</button><button id="b1">Explotado</button><button id="b2">Quitar selección</button></div>
+    <ul id="lista"></ul>
+  </aside>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+{
+const PUBLIC_URL = "https://alanalcantara847-johill.github.io/muebles-/buro-redondo-500/";
+const PROY = "BURO500";
+const EXEC_ANY = "https://script.google.com/macros/s/AKfycbwU8S0xRvafqPcW1UURPLtQM8dNLcuXqVSSnIQNq3xFNgz0Nz2H4H2lmZyHz-HAEIJ1/exec";
+const EXEC_JOHILL = "https://script.google.com/a/macros/johill.com.mx/s/AKfycbwU8S0xRvafqPcW1UURPLtQM8dNLcuXqVSSnIQNq3xFNgz0Nz2H4H2lmZyHz-HAEIJ1/exec";
+const CHK = {};
+const PI = Math.PI, rad = d => d * PI / 180;
+const R1 = 250, R2 = 235, RI = 220, PASO = 10, KW = 6, FRONT = -90, AB = 90;
+const AFRE = AB - 2 * (3 / R1) * 180 / PI;
+const v = document.getElementById('v');
+const scene = new THREE.Scene();
+const cam = new THREE.PerspectiveCamera(35, 1, 10, 20000);
+const ren = new THREE.WebGLRenderer({antialias: true, alpha: true});
+ren.setPixelRatio(Math.min(devicePixelRatio, 2)); v.appendChild(ren.domElement);
+const ctl = new THREE.OrbitControls(cam, ren.domElement); ctl.target.set(0, 300, 0); ctl.enableDamping = true;
+cam.position.set(1100, 900, 1500);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x8a7a66, 0.9));
+const sun = new THREE.DirectionalLight(0xffffff, 0.75); sun.position.set(800, 1500, 1200); scene.add(sun);
+const MAT = {mdf: 0xd2b48c, cor: 0xf2f2ee, met: 0xb0b3b6, taco: 0xc9a77a};
+
+function kerfShape(Rs, a0, a1) {
+  const Ri = Rs - 15, Rb = Rs - 2, Lf = Rs * rad(a1 - a0);
+  const n = Math.floor((Lf - 15) / PASO) + 1, hw = (KW - PASO * 15 / Rs) / 2;
+  const s = new THREE.Shape(), m = Math.max(24, Math.round((a1 - a0) / 3));
+  for (let i = 0; i <= m; i++) { const a = rad(a0 + (a1 - a0) * i / m), p = [Rs * Math.cos(a), Rs * Math.sin(a)]; i ? s.lineTo(...p) : s.moveTo(...p); }
+  s.lineTo(Ri * Math.cos(rad(a1)), Ri * Math.sin(rad(a1)));
+  for (let k = n - 1; k >= 0; k--) {
+    const ac = rad(a0) + (7.5 + k * PASO) / Rs, dh = hw / Ri;
+    [[Ri, ac + dh], [Rb, ac + dh], [Rb, ac - dh], [Ri, ac - dh]].forEach(([r, a]) => s.lineTo(r * Math.cos(a), r * Math.sin(a)));
+  }
+  s.lineTo(Ri * Math.cos(rad(a0)), Ri * Math.sin(rad(a0)));
+  return s;
+}
+function extr(shape, h) {
+  const g = new THREE.ExtrudeGeometry(shape, {depth: h, bevelEnabled: false, curveSegments: 48});
+  g.rotateX(-PI / 2); return g;           // forma XY -> planta XZ, altura hacia +Y; ángulo -90 queda al frente (+Z)
+}
+function disc(r) { const s = new THREE.Shape(); s.absarc(0, 0, r, 0, 2 * PI, false); return s; }
+
+const piezas = [];
+function add(code, nombre, medida, geo, pos, col, ex, cajon) {
+  const mat = new THREE.MeshStandardMaterial({color: col, roughness: .85, metalness: col === MAT.met ? .5 : 0});
+  const me = new THREE.Mesh(geo, mat);
+  me.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo, 30), new THREE.LineBasicMaterial({color: 0x4a3a28, transparent: true, opacity: .35})));
+  scene.add(me);
+  const p = {code, nombre, medida, me, base: new THREE.Vector3(...pos), ex: new THREE.Vector3(...ex), cajon};
+  me.userData.p = p; piezas.push(p); return p;
+}
+const caja = (x0, x1, y0, y1, z0, z1) => { const g = new THREE.BoxGeometry(x1 - x0, y1 - y0, z1 - z0); g.translate((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2); return g; };
+
+const a0 = FRONT + AB / 2, a1 = FRONT - AB / 2 + 360;
+add('ANI0401A', 'Anillo capa exterior', '1199 × 588 · 117 ranuras T6 p13 a cada 10', extr(kerfShape(R1, a0, a1), 588), [0, 0, 0], MAT.mdf, [0, 0, -520]);
+add('ANI0402A', 'Anillo capa interior', '1128 × 588 · 110 ranuras T6 p13 a cada 10', extr(kerfShape(R2, a0, a1), 588), [0, 0, 0], MAT.mdf, [0, 0, -260]);
+add('PIS0409A', 'Piso redondo', 'Ø439 × 15 (cuadro 445)', extr(disc(219.5), 15), [0, 0, 0], MAT.mdf, [0, -260, 0]);
+add('TEC0410A', 'Techo redondo', 'Ø439 × 15 (cuadro 445)', extr(disc(219.5), 15), [0, 573, 0], MAT.mdf, [0, 240, 0]);
+add('LAT0411A', 'Costado interior izq', '305 × 558', caja(-155, -140, 15, 573, -154.5, 150.5), [0, 0, 0], MAT.mdf, [-260, 0, 0]);
+add('LAT0412A', 'Costado interior der', '305 × 558', caja(140, 155, 15, 573, -154.5, 150.5), [0, 0, 0], MAT.mdf, [260, 0, 0]);
+add('CORIAN', 'Cubierta Corian', 'Ø500 × 12 (compra aparte)', extr(disc(250), 12), [0, 588, 0], MAT.cor, [0, 430, 0]);
+const f0 = FRONT - AFRE / 2, f1 = FRONT + AFRE / 2;
+[['superior', 295, 330, ['FRE0403A', 'FRE0404A', 'BCJ0413A', 'COS0414A', 'COS0415A', 'FCJ0416A', 'TCJ0417A'], 1],
+ ['inferior', 2, 35, ['FRE0405A', 'FRE0406A', 'BCJ0418A', 'COS0419A', 'COS0420A', 'FCJ0421A', 'TCJ0422A'], 0]].forEach(([nm, zf, zb, c, up]) => {
+  const dz = 420, dy = up ? 120 : -60;
+  add(c[0], 'Frente ' + nm + ' capa ext.', '407 × 290 · 38 ranuras', extr(kerfShape(R1, f0, f1), 290), [0, zf, 0], MAT.mdf, [0, dy, dz + 300], nm);
+  add(c[1], 'Frente ' + nm + ' capa int.', '384 × 290 · 35 ranuras', extr(kerfShape(R2, f0, f1), 290), [0, zf, 0], MAT.mdf, [0, dy, dz + 200], nm);
+  add(c[2], 'Base cajón ' + nm, '254 × 250', caja(-127, 127, zb, zb + 15, -80, 170), [0, 0, 0], MAT.mdf, [0, dy - 70, dz], nm);
+  add(c[3], 'Costado cajón ' + nm + ' izq', '250 × 145', caja(-127, -112, zb + 15, zb + 160, -80, 170), [0, 0, 0], MAT.mdf, [-110, dy, dz], nm);
+  add(c[4], 'Costado cajón ' + nm + ' der', '250 × 145', caja(112, 127, zb + 15, zb + 160, -80, 170), [0, 0, 0], MAT.mdf, [110, dy, dz], nm);
+  add(c[5], 'Frente interior cajón ' + nm, '224 × 145', caja(-112, 112, zb + 15, zb + 160, 155, 170), [0, 0, 0], MAT.mdf, [0, dy, dz + 80], nm);
+  add(c[6], 'Trasero cajón ' + nm, '224 × 145', caja(-112, 112, zb + 15, zb + 160, -80, -65), [0, 0, 0], MAT.mdf, [0, dy, dz - 80], nm);
+  add('TACO-' + nm.slice(0, 3).toUpperCase(), 'Taco frente ' + nm, '80 × 42 × 80 (tornillos)', caja(-40, 40, zb + 40, zb + 120, 170, 212), [0, 0, 0], MAT.taco, [0, dy, dz + 130], nm);
+  [-133.35, 133.35].forEach((x, i) => add('CORR-' + nm.slice(0, 3).toUpperCase() + (i ? 'D' : 'I'), 'Corredera 250 ' + nm, 'Corredera 250 mm', caja(x - 6.35, x + 6.35, zb + 40, zb + 85, -80, 170), [0, 0, 0], MAT.met, [i ? 180 : -180, dy, dz - 40], nm));
+});
+
+const ex = document.getElementById('ex'), ab = document.getElementById('ab');
+const PASOS = [
+  ['Piso', 'Coloca el piso PIS0409A con la cara 5 (barrenos) hacia arriba.', c => c === 'PIS0409A'],
+  ['Costados interiores', 'Clavacotes Ø8 con pegamento: LAT0411A y LAT0412A al piso.', c => c.startsWith('LAT')],
+  ['Techo', 'TEC0410A sobre los costados, cara 5 hacia abajo, con clavacotes.', c => c === 'TEC0410A'],
+  ['Anillo capa interior', 'Dobla ANI0402A (ranuras hacia dentro) alrededor de piso y techo; pega y refila extremos.', c => c === 'ANI0402A'],
+  ['Anillo capa exterior', 'Encola ANI0401A cara con cara sobre la capa interior, ranuras hacia dentro.', c => c === 'ANI0401A'],
+  ['Correderas', 'Correderas de 250 en los costados interiores.', c => c.startsWith('CORR')],
+  ['Cajas de cajón', 'Base, costados, frente interior y trasero de cada cajón con clavacotes.', c => /^(BCJ|COS|FCJ|TCJ)/.test(c)],
+  ['Tacos', 'Taco al frente de cada caja para recibir el frente curvo.', c => c.startsWith('TACO')],
+  ['Frentes capa interior', 'FRE0404A y FRE0406A doblados (ranuras hacia dentro) sobre el taco.', c => c === 'FRE0404A' || c === 'FRE0406A'],
+  ['Frentes capa exterior', 'FRE0403A y FRE0405A encolados cara con cara; atornilla al taco.', c => c === 'FRE0403A' || c === 'FRE0405A'],
+  ['Cubierta', 'Cubierta de Corian Ø500 × 12 sobre el techo.', c => c === 'CORIAN'],
+];
+piezas.forEach(p => { p.paso = PASOS.findIndex(s => s[2](p.code)); });
+let modo = false, paso = 0, prog = 1, play = false;   // paso = cuántos pasos ya colocados; prog = avance del paso actual
+const pTxt = document.getElementById('pTxt'), pBar = document.getElementById('pBar'), pPlay = document.getElementById('pPlay');
+function colocar() {
+  const t = +ex.value, o = +ab.value;
+  piezas.forEach(p => {
+    let f = t, vis = true;
+    if (modo) {
+      if (p.paso < paso - 1) f = 0;
+      else if (p.paso === paso - 1) f = 1 - prog;
+      else { f = 1; vis = false; }
+    }
+    p.me.position.copy(p.base).addScaledVector(p.ex, f);
+    if (p.cajon && !modo) p.me.position.z += o * (p.cajon === 'superior' ? 200 : 240);
+    p.me.visible = vis;
+  });
+  pBar.style.width = (modo ? (paso - 1 + prog) / PASOS.length * 100 : 0) + '%';
+}
+function texto() {
+  if (!modo || paso === 0) { pTxt.innerHTML = `Paso 0 de ${PASOS.length} · toca <b>Reproducir</b>`; return; }
+  const [t, d] = PASOS[paso - 1]; pTxt.innerHTML = `<b>Paso ${paso} de ${PASOS.length} · ${t}</b><br>${d}`;
+}
+function irA(n, animar) {
+  modo = true; if (sel) elegirNada();
+  paso = Math.max(0, Math.min(PASOS.length, n)); prog = animar ? 0 : 1; texto();
+  if (!animar) { colocar(); return; }
+  const t0 = performance.now(), dur = matchMedia('(prefers-reduced-motion: reduce)').matches ? 1 : 1100;
+  const f = now => { prog = Math.min(1, (now - t0) / dur); colocar(); if (prog < 1) requestAnimationFrame(f); else if (play) setTimeout(() => { if (!play) return; if (paso < PASOS.length) irA(paso + 1, true); else parar(); }, 900); };
+  requestAnimationFrame(f);
+}
+function parar() { play = false; pPlay.textContent = paso >= PASOS.length ? '↺ Repetir armado' : '▶ Reproducir armado'; }
+pPlay.onclick = () => {
+  if (play) { parar(); return; }
+  play = true; pPlay.textContent = '❚❚ Pausa';
+  ex.value = 0; ab.value = 0;
+  irA(paso >= PASOS.length ? 1 : paso + 1, true);
+};
+document.getElementById('pNext').onclick = () => { parar(); irA(paso + 1, true); };
+document.getElementById('pPrev').onclick = () => { parar(); irA(paso - 1, false); };
+function salirModo() { modo = false; parar(); paso = 0; prog = 1; texto(); }
+const lista = document.getElementById('lista'), info = document.getElementById('info');
+lista.innerHTML = piezas.filter(p => !p.code.startsWith('CORR')).map(p => `<li tabindex="0" data-c="${p.code}"><b>${p.code}</b><span>${p.nombre} · ${p.medida}</span></li>`).join('');
+let sel = null;
+function elegirNada() { sel = null; lista.querySelectorAll('li').forEach(li => li.classList.remove('sel')); piezas.forEach(p => p.me.material.emissive.setHex(0)); if (location.hash) history.replaceState(null, '', ' '); info.innerHTML = '<h2>Toca una pieza</h2><p class="hint">Arrastra para girar, pellizca o usa la rueda para acercar.</p>'; }
+function elegir(code) {
+  piezas.forEach(p => { p.me.material.emissive.setHex(0); p.me.material.transparent = false; p.me.material.opacity = 1; });
+  lista.querySelectorAll('li').forEach(li => li.classList.toggle('sel', li.dataset.c === code));
+  sel = piezas.find(p => p.code === code) || null;
+  if (!sel) { info.innerHTML = '<h2>Toca una pieza</h2><p class="hint">Arrastra para girar, pellizca o usa la rueda para acercar.</p>'; colocar(); return; }
+  if (modo) salirModo();
+  piezas.forEach(p => { if (p !== sel) { p.me.material.transparent = true; p.me.material.opacity = .25; } });
+  sel.me.material.emissive.setHex(0x003a66);
+  info.innerHTML = banner(sel.code) + `<h2>${sel.code}</h2><p><b>${sel.nombre}</b></p><p>${sel.medida}</p>`;
+  const li = lista.querySelector(`li[data-c="${code}"]`); if (li) { const as = document.querySelector('aside'); if (as.scrollHeight > as.clientHeight + 4) as.scrollTop = li.offsetTop - as.offsetTop - as.clientHeight / 2; }
+}
+lista.addEventListener('click', e => { const li = e.target.closest('li'); if (li) { location.hash = li.dataset.c; } });
+lista.addEventListener('keydown', e => { if (e.key === 'Enter') { const li = e.target.closest('li'); if (li) location.hash = li.dataset.c; } });
+const ray = new THREE.Raycaster(), ptr = new THREE.Vector2(); let down = null;
+ren.domElement.addEventListener('pointerdown', e => down = [e.clientX, e.clientY]);
+ren.domElement.addEventListener('pointerup', e => {
+  if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 5) return;
+  const r = ren.domElement.getBoundingClientRect();
+  ptr.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1);
+  ray.setFromCamera(ptr, cam);
+  const hit = ray.intersectObjects(piezas.map(p => p.me), false)[0];
+  location.hash = hit ? hit.object.userData.p.code : '';
+});
+function anim(to, el) { const s = +el.value, t0 = performance.now(); const f = n => { const k = Math.min(1, (n - t0) / 600); el.value = s + (to - s) * k; colocar(); if (k < 1) requestAnimationFrame(f); }; requestAnimationFrame(f); }
+document.getElementById('b0').onclick = () => { salirModo(); anim(0, ex); anim(0, ab); };
+document.getElementById('b1').onclick = () => { salirModo(); anim(1, ex); };
+document.getElementById('b2').onclick = () => { location.hash = ''; };
+ex.oninput = ab.oninput = () => { if (modo) salirModo(); colocar(); };
+function banner(code) {
+  const ck = CHK[code]; if (!ck) return '';
+  if (ck.st === 'espera') return '<p class="chk w">Marcando pieza en la hoja de control…</p>';
+  if (ck.st === 'ok') return `<p class="chk ok"><b>✔ ${ck.r.detalle}</b><br>${ck.r.avance}</p>`;
+  if (ck.st === 'no') return `<p class="chk no"><b>✘ ${ck.r.titulo}</b><br>${ck.r.detalle}</p>`;
+  return `<p class="chk w">No se pudo marcar desde aquí. <a href="${EXEC_JOHILL}?m=${PROY}&p=${code}">Marcar con cuenta johill</a></p>`;
+}
+function marcar(code) {
+  if (CHK[code]) return;
+  CHK[code] = {st: 'espera'};
+  const cb = '__chk' + Date.now(); let hecho = false;
+  const fin = (st, r) => { if (hecho) return; hecho = true; CHK[code] = {st, r}; delete window[cb]; if (sel && sel.code === code) elegir(code); };
+  window[cb] = r => fin(r && r.ok ? 'ok' : 'no', r || {});
+  const sc = document.createElement('script');
+  sc.src = EXEC_ANY + '?m=' + encodeURIComponent(PROY) + '&p=' + encodeURIComponent(code) + '&v=' + encodeURIComponent(PUBLIC_URL) + '&callback=' + cb;
+  sc.onerror = () => fin('err'); setTimeout(() => fin('err'), 15000);
+  document.head.appendChild(sc);
+}
+function hashSel() {
+  let h = decodeURIComponent(location.hash.slice(1));
+  if (/^c-/i.test(h)) {
+    h = h.slice(2).toUpperCase();
+    if (piezas.some(p => p.code === h)) { marcar(h); history.replaceState(null, '', location.pathname + '#' + h); }
+  }
+  if (h.toLowerCase() === 'armado') {
+    elegir(''); ex.value = 0; ab.value = 0; play = true; pPlay.textContent = '❚❚ Pausa'; irA(1, true); return;
+  }
+  elegir(h.toUpperCase());
+}
+addEventListener('hashchange', hashSel);
+function tam() { const w = v.clientWidth, h = v.clientHeight; ren.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); }
+const ro = new ResizeObserver(tam); ro.observe(v);
+if (matchMedia('(max-width:820px)').matches) v.appendChild(info);
+texto(); colocar(); hashSel();
+(function loop() { ctl.update(); ren.render(scene, cam); requestAnimationFrame(loop); })();
+}
+</script>
+</body>
+</html>
