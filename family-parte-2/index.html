@@ -261,7 +261,7 @@ function marcar(code){
   const fin=(st,r)=>{if(hecho)return;hecho=true;CHK[code]={st,r};delete window[cb];if(tab==='piezas'&&sel===code)renderSide();};
   window[cb]=r=>fin(r&&r.ok?'ok':'no',r||{});
   const sc=document.createElement('script');
-  sc.src=EXEC_ANY+'?m='+encodeURIComponent(PROY)+'&p='+encodeURIComponent(code)+'&callback='+cb;
+  sc.src=EXEC_ANY+'?m='+encodeURIComponent(PROY)+'&p='+encodeURIComponent(code)+'&v='+encodeURIComponent(location.origin+location.pathname)+'&callback='+cb;
   sc.onerror=()=>fin('err');setTimeout(()=>fin('err'),15000);
   document.head.appendChild(sc);
 }
