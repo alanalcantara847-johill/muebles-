@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Santa Teresa · Mueble de TV · Armado 3D y piezas</title>
+<style>
+:root{--bg:#f6f3ee;--ink:#22201c;--mut:#6d665c;--acc:#015089;--card:#fff;--line:#e3ddd3}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg)}
+#app{display:flex;flex-direction:column;height:100%}
+header{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--card);flex-wrap:wrap}
+header h1{font-size:16px;margin:0;font-weight:650}
+header .sub{font-size:12px;color:var(--mut)}
+nav{margin-left:auto;display:flex;gap:4px}
+nav button,.btn{border:1px solid var(--line);background:var(--card);padding:7px 12px;border-radius:8px;font:inherit;font-size:13px;cursor:pointer;color:var(--ink)}
+nav button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+main{flex:1;display:flex;min-height:0}
+#side{width:370px;max-width:100%;overflow:auto;padding:14px;border-right:1px solid var(--line);background:var(--card)}
+#stage{flex:1;position:relative;min-height:300px}
+#stage canvas{display:block;width:100%;height:100%}
+#hud{position:absolute;left:12px;right:12px;bottom:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#prog{flex:1;min-width:120px;height:6px;background:#0001;border-radius:4px;overflow:hidden}
+#prog i{display:block;height:100%;background:var(--acc);width:0;transition:width .3s}
+#modes{position:absolute;top:12px;right:12px;display:flex;gap:4px}
+.kicker{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--acc);font-weight:700}
+h2{font-size:19px;margin:4px 0 8px}
+p{line-height:1.45;font-size:14px;margin:6px 0}
+.tag{display:inline-block;background:#f1ebe2;border-radius:6px;padding:2px 7px;font-size:12px;font-weight:600;margin:2px 3px 2px 0;cursor:pointer}
+.tag.hw{background:#e6eef5}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+td{padding:5px 2px;border-bottom:1px solid var(--line);vertical-align:top}
+td:first-child{color:var(--mut);width:38%}
+.list .it{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;margin:5px 0;cursor:pointer;font-size:13px}
+.list .it:hover,.list .it.on{border-color:var(--acc);background:#f0f6fb}
+.list .it b{font-size:13px}
+.grp{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:12px 0 2px;font-weight:700}
+#labels{display:none;flex:1;overflow:auto;padding:16px;background:#fff}
+.sheet{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.lab{border:1px dashed #bbb;border-radius:6px;padding:10px;display:flex;gap:10px;align-items:center}
+.lab svg{width:96px;height:96px;flex:none}
+.lab .c{font-weight:800;font-size:15px}
+.lab .n{font-size:12px}
+.lab .m{font-size:11px;color:var(--mut)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.row input{flex:1;min-width:240px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:13px}
+#msg{font-size:12px;color:var(--mut)}
+.chk{border-radius:10px;padding:12px 14px;margin:0 0 12px;font-size:14px;line-height:1.45}
+.chk.ok{background:#d6f0dc;color:#1e7e34;border:1px solid #9fd7ad}
+.chk.no{background:#fbe1de;color:#a93226;border:1px solid #f0aaa2}
+.chk.w{background:#fff4e5;color:#7a4b00;border:1px solid #f5c98b}
+@media (max-width:760px){
+  main{flex-direction:column-reverse}
+  #side{width:100%;max-height:46%;border-right:0;border-top:1px solid var(--line)}
+  nav{margin-left:0;width:100%}
+  nav button{flex:1}
+}
+</style>
+</head>
+<body>
+<div id="app">
+<header>
+  <div><h1>Santa Teresa · Mueble de TV · 4000 × 571 × 418</h1><div class="sub">Walnut Heights y melamina negra 19.15 mm · 34 piezas · 2 módulos + 2 zoclos · Johill</div></div>
+  <nav>
+    <button data-tab="armado" class="on">Armado</button>
+    <button data-tab="piezas">Piezas</button>
+    <button data-tab="etiquetas">Etiquetas QR</button>
+  </nav>
+</header>
+<main id="main">
+  <aside id="side"></aside>
+  <section id="stage">
+    <div id="modes"><button class="btn" id="mSala">Sala</button><button class="btn" id="mDib">Dibujo</button></div>
+    <div id="hud">
+      <button class="btn" id="bPrev">◀ Anterior</button>
+      <button class="btn pri" id="bPlay">▶ Reproducir</button>
+      <button class="btn" id="bNext">Siguiente ▶</button>
+      <div id="prog"><i></i></div>
+    </div>
+  </section>
+  <section id="labels">
+    <div class="row">
+      <input id="baseUrl" placeholder="Dirección pública de esta página">
+      <button class="btn" id="bApply">Actualizar QR</button>
+    </div>
+    <div id="msg"></div>
+    <div class="sheet" id="sheet"></div>
+  </section>
+</main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+// ---------- Datos (Santa Teresa · Mueble de TV) ----------
+const PUBLIC_URL = "https://alanalcantara847-johill.github.io/muebles-/santa-teresa-mueble-de-tv/";
+const P = [{"code": "LAT0101A", "id": 101, "name": "Costado izquierdo", "desc": "Costado · Modulo Izquierdo", "black": false, "med": "432 × 400 × 19.15", "size": [19.15, 432.0, 400.0], "pos": [-1990.42, 336.0, -200.0], "from": [-320, 0, 0], "step": 4, "vert": true, "corte": "430.0 × 398.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 432+432 400+400", "barr": "7 barrenos de cara Ø8 × 12", "maq": "—", "une": ["BAS0104A", "FON0105A", "TAP0103A"]}, {"code": "LAT0102A", "id": 102, "name": "Costado derecho", "desc": "Costado · Modulo Izquierdo", "black": false, "med": "432 × 400 × 19.15", "size": [19.15, 432.0, 400.0], "pos": [-9.58, 336.0, -200.0], "from": [320, 0, 0], "step": 4, "vert": true, "corte": "430.0 × 398.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 432+432 400+400", "barr": "7 barrenos de cara Ø8 × 12", "maq": "—", "une": ["BAS0104A", "FON0105A", "TAP0103A"]}, {"code": "TAP0103A", "id": 103, "name": "Cielo", "desc": "Cielo entre costados, remetido 20 al frente (gola) · Modulo Izquierdo", "black": false, "med": "1961.7 × 380 × 19.15", "size": [1961.7, 19.15, 380.0], "pos": [-1000.0, 542.42, -210.0], "from": [0, 320, 0], "step": 3, "vert": false, "corte": "1959.7 × 378.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 1961.7+1961.7 380+380", "barr": "4 barrenos de canto Ø8 × 22 · 14 barrenos de cara Ø8 × 12", "maq": "—", "une": ["DIV0106A", "DIV0107A", "FON0105A", "LAT0101A", "LAT0102A"]}, {"code": "BAS0104A", "id": 104, "name": "Piso", "desc": "Piso entre costados · Modulo Izquierdo", "black": false, "med": "1961.7 × 400 × 19.15", "size": [1961.7, 19.15, 400.0], "pos": [-1000.0, 129.57, -200.0], "from": [0, 0, 380], "step": 1, "vert": false, "corte": "1959.7 × 398.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 1961.7+1961.7 400+400", "barr": "4 barrenos de canto Ø8 × 22 · 14 barrenos de cara Ø8 × 12", "maq": "—", "une": ["DIV0106A", "DIV0107A", "FON0105A", "LAT0101A", "LAT0102A"]}, {"code": "FON0105A", "id": 105, "name": "Fondo", "desc": "Fondo entre costados, piso y cielo, remetido 18 desde atrás, con 4 ranuras pasacables · Modulo Izquierdo", "black": false, "med": "1961.7 × 393.7 × 19.15", "size": [1961.7, 393.7, 19.15], "pos": [-1000.0, 336.0, -372.43], "from": [0, 0, -420], "step": 1, "vert": false, "corte": "1959.7 × 391.7", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 1961.7+1961.7 393.7+393.7", "barr": "22 barrenos de canto Ø8 × 22 · 6 barrenos de cara Ø8 × 12 · 4 ranuras pasacables 50 × 75", "maq": "—", "une": ["BAS0104A", "DIV0106A", "DIV0107A", "LAT0101A", "LAT0102A", "TAP0103A"]}, {"code": "DIV0106A", "id": 106, "name": "Relleno 1", "desc": "Relleno al centro (doble, pegado al relleno 2), del fondo al frente · Modulo Izquierdo", "black": false, "med": "393.7 × 362.85 × 19.15", "size": [19.15, 393.7, 362.85], "pos": [-1009.58, 336.0, -181.43], "from": [0, 260, 0], "step": 2, "vert": true, "corte": "391.7 × 360.9", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 393.7+393.7 362.85+362.85", "barr": "9 barrenos de canto Ø8 × 22", "maq": "—", "une": ["BAS0104A", "FON0105A", "TAP0103A"]}, {"code": "DIV0107A", "id": 107, "name": "Relleno 2", "desc": "Relleno al centro (doble, pegado al relleno 1), del fondo al frente · Modulo Izquierdo", "black": false, "med": "393.7 × 362.85 × 19.15", "size": [19.15, 393.7, 362.85], "pos": [-990.42, 336.0, -181.43], "from": [0, 260, 0], "step": 2, "vert": true, "corte": "391.7 × 360.9", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 393.7+393.7 362.85+362.85", "barr": "9 barrenos de canto Ø8 × 22", "maq": "—", "une": ["BAS0104A", "FON0105A", "TAP0103A"]}, {"code": "PUE0108A", "id": 108, "name": "Puerta izquierda", "desc": "Puerta batiente sobrepuesta (bisagras por el taller) · Modulo Izquierdo", "black": false, "med": "402 × 996 × 19.15", "size": [996.0, 402.0, 19.15], "pos": [-1500.0, 323.0, 9.57], "from": [0, 0, 450], "step": 5, "vert": true, "corte": "400.0 × 994.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 402+402 996+996", "barr": "Sin barrenos", "maq": "—", "une": []}, {"code": "PUE0109A", "id": 109, "name": "Puerta derecha", "desc": "Puerta batiente sobrepuesta (bisagras por el taller) · Modulo Izquierdo", "black": false, "med": "402 × 996 × 19.15", "size": [996.0, 402.0, 19.15], "pos": [-500.0, 323.0, 9.57], "from": [0, 0, 450], "step": 5, "vert": true, "corte": "400.0 × 994.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 402+402 996+996", "barr": "Sin barrenos", "maq": "—", "une": []}, {"code": "CUB0110A", "id": 110, "name": "Cubierta", "desc": "Cubierta melamina negra (orden de corte 2000 × 418) · Modulo Izquierdo", "black": true, "med": "2000 × 418 × 19.15", "size": [2000.0, 19.15, 418.0], "pos": [-1000.0, 561.58, -191.0], "from": [0, 420, 0], "step": 6, "vert": false, "corte": "1999.0 × 416.0", "mat": "Melamina Negra 19.15 mm", "cantos": "Cubrecanto 1 mm: 2000+2000 418", "barr": "Sin barrenos", "maq": "—", "une": []}, {"code": "LAT0201A", "id": 201, "name": "Costado izquierdo", "desc": "Costado · Modulo Derecho", "black": false, "med": "432 × 400 × 19.15", "size": [19.15, 432.0, 400.0], "pos": [9.58, 336.0, -200.0], "from": [-320, 0, 0], "step": 4, "vert": true, "corte": "430.0 × 398.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 432+432 400+400", "barr": "7 barrenos de cara Ø8 × 12", "maq": "—", "une": ["BAS0204A", "FON0205A", "TAP0203A"]}, {"code": "LAT0202A", "id": 202, "name": "Costado derecho", "desc": "Costado · Modulo Derecho", "black": false, "med": "432 × 400 × 19.15", "size": [19.15, 432.0, 400.0], "pos": [1990.43, 336.0, -200.0], "from": [320, 0, 0], "step": 4, "vert": true, "corte": "430.0 × 398.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 432+432 400+400", "barr": "7 barrenos de cara Ø8 × 12", "maq": "—", "une": ["BAS0204A", "FON0205A", "TAP0203A"]}, {"code": "TAP0203A", "id": 203, "name": "Cielo", "desc": "Cielo entre costados, remetido 20 al frente (gola) · Modulo Derecho", "black": false, "med": "1961.7 × 380 × 19.15", "size": [1961.7, 19.15, 380.0], "pos": [1000.0, 542.42, -210.0], "from": [0, 320, 0], "step": 3, "vert": false, "corte": "1959.7 × 378.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 1961.7+1961.7 380+380", "barr": "4 barrenos de canto Ø8 × 22 · 14 barrenos de cara Ø8 × 12", "maq": "—", "une": ["DIV0206A", "DIV0207A", "FON0205A", "LAT0201A", "LAT0202A"]}, {"code": "BAS0204A", "id": 204, "name": "Piso", "desc": "Piso entre costados · Modulo Derecho", "black": false, "med": "1961.7 × 400 × 19.15", "size": [1961.7, 19.15, 400.0], "pos": [1000.0, 129.57, -200.0], "from": [0, 0, 380], "step": 1, "vert": false, "corte": "1959.7 × 398.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 1961.7+1961.7 400+400", "barr": "4 barrenos de canto Ø8 × 22 · 14 barrenos de cara Ø8 × 12", "maq": "—", "une": ["DIV0206A", "DIV0207A", "FON0205A", "LAT0201A", "LAT0202A"]}, {"code": "FON0205A", "id": 205, "name": "Fondo", "desc": "Fondo entre costados, piso y cielo, remetido 18 desde atrás, con 2 ranuras pasacables · Modulo Derecho", "black": false, "med": "1961.7 × 393.7 × 19.15", "size": [1961.7, 393.7, 19.15], "pos": [1000.0, 336.0, -372.43], "from": [0, 0, -420], "step": 1, "vert": false, "corte": "1959.7 × 391.7", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 1961.7+1961.7 393.7+393.7", "barr": "22 barrenos de canto Ø8 × 22 · 6 barrenos de cara Ø8 × 12 · 2 ranuras pasacables 50 × 75", "maq": "—", "une": ["BAS0204A", "DIV0206A", "DIV0207A", "LAT0201A", "LAT0202A", "TAP0203A"]}, {"code": "DIV0206A", "id": 206, "name": "Relleno 1", "desc": "Relleno al centro (doble, pegado al relleno 2), del fondo al frente · Modulo Derecho", "black": false, "med": "393.7 × 362.85 × 19.15", "size": [19.15, 393.7, 362.85], "pos": [990.43, 336.0, -181.43], "from": [0, 260, 0], "step": 2, "vert": true, "corte": "391.7 × 360.9", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 393.7+393.7 362.85+362.85", "barr": "9 barrenos de canto Ø8 × 22", "maq": "—", "une": ["BAS0204A", "FON0205A", "TAP0203A"]}, {"code": "DIV0207A", "id": 207, "name": "Relleno 2", "desc": "Relleno al centro (doble, pegado al relleno 1), del fondo al frente · Modulo Derecho", "black": false, "med": "393.7 × 362.85 × 19.15", "size": [19.15, 393.7, 362.85], "pos": [1009.57, 336.0, -181.43], "from": [0, 260, 0], "step": 2, "vert": true, "corte": "391.7 × 360.9", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 393.7+393.7 362.85+362.85", "barr": "9 barrenos de canto Ø8 × 22", "maq": "—", "une": ["BAS0204A", "FON0205A", "TAP0203A"]}, {"code": "PUE0208A", "id": 208, "name": "Puerta izquierda", "desc": "Puerta batiente sobrepuesta (bisagras por el taller) · Modulo Derecho", "black": false, "med": "402 × 996 × 19.15", "size": [996.0, 402.0, 19.15], "pos": [500.0, 323.0, 9.57], "from": [0, 0, 450], "step": 5, "vert": true, "corte": "400.0 × 994.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 402+402 996+996", "barr": "Sin barrenos", "maq": "—", "une": []}, {"code": "PUE0209A", "id": 209, "name": "Puerta derecha", "desc": "Puerta batiente sobrepuesta (bisagras por el taller) · Modulo Derecho", "black": false, "med": "402 × 996 × 19.15", "size": [996.0, 402.0, 19.15], "pos": [1500.0, 323.0, 9.57], "from": [0, 0, 450], "step": 5, "vert": true, "corte": "400.0 × 994.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 402+402 996+996", "barr": "Sin barrenos", "maq": "—", "une": []}, {"code": "CUB0210A", "id": 210, "name": "Cubierta", "desc": "Cubierta melamina negra (orden de corte 2000 × 418) · Modulo Derecho", "black": true, "med": "2000 × 418 × 19.15", "size": [2000.0, 19.15, 418.0], "pos": [1000.0, 561.58, -191.0], "from": [0, 420, 0], "step": 6, "vert": false, "corte": "1999.0 × 416.0", "mat": "Melamina Negra 19.15 mm", "cantos": "Cubrecanto 1 mm: 2000+2000 418", "barr": "Sin barrenos", "maq": "—", "une": []}, {"code": "ZOC0301A", "id": 301, "name": "Frente", "desc": "Frente de zoclo (remetido 50) · Zoclo Izquierdo", "black": false, "med": "1950 × 120 × 19.15", "size": [1950.0, 120.0, 19.15], "pos": [-1000.0, 60.0, -59.58], "from": [0, -150, 0], "step": 0, "vert": false, "corte": "1948.0 × 118.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 1950+1950 120+120", "barr": "10 barrenos de cara Ø8 × 12", "maq": "—", "une": ["ZOT0303A", "ZOT0304A", "ZOT0305A", "ZOT0306A", "ZOT0307A"]}, {"code": "ZOC0302A", "id": 302, "name": "Back", "desc": "Trasero de zoclo · Zoclo Izquierdo", "black": false, "med": "1950 × 120 × 19.15", "size": [1950.0, 120.0, 19.15], "pos": [-1000.0, 60.0, -390.43], "from": [0, -150, 0], "step": 0, "vert": false, "corte": "1948.0 × 118.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 1950+1950 120+120", "barr": "10 barrenos de cara Ø8 × 12", "maq": "—", "une": ["ZOT0303A", "ZOT0304A", "ZOT0305A", "ZOT0306A", "ZOT0307A"]}, {"code": "ZOT0303A", "id": 303, "name": "Costado izquierdo", "desc": "Entre frente y back de zoclo · Zoclo Izquierdo", "black": false, "med": "311.7 × 120 × 19.15", "size": [19.15, 120.0, 311.7], "pos": [-1965.42, 60.0, -225.0], "from": [0, -150, 0], "step": 0, "vert": false, "corte": "309.7 × 118.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 311.7+311.7 120+120", "barr": "4 barrenos de canto Ø8 × 22", "maq": "—", "une": ["ZOC0301A", "ZOC0302A"]}, {"code": "ZOT0304A", "id": 304, "name": "Relleno 1", "desc": "Entre frente y back de zoclo · Zoclo Izquierdo", "black": false, "med": "311.7 × 120 × 19.15", "size": [19.15, 120.0, 311.7], "pos": [-1482.71, 60.0, -225.0], "from": [0, -150, 0], "step": 0, "vert": false, "corte": "309.7 × 118.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 311.7+311.7 120+120", "barr": "4 barrenos de canto Ø8 × 22", "maq": "—", "une": ["ZOC0301A", "ZOC0302A"]}, {"code": "ZOT0305A", "id": 305, "name": "Relleno 2", "desc": "Entre frente y back de zoclo · Zoclo Izquierdo", "black": false, "med": "311.7 × 120 × 19.15", "size": [19.15, 120.0, 311.7], "pos": [-1000.0, 60.0, -225.0], "from": [0, -150, 0], "step": 0, "vert": false, "corte": "309.7 × 118.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 311.7+311.7 120+120", "barr": "4 barrenos de canto Ø8 × 22", "maq": "—", "une": ["ZOC0301A", "ZOC0302A"]}, {"code": "ZOT0306A", "id": 306, "name": "Relleno 3", "desc": "Entre frente y back de zoclo · Zoclo Izquierdo", "black": false, "med": "311.7 × 120 × 19.15", "size": [19.15, 120.0, 311.7], "pos": [-517.29, 60.0, -225.0], "from": [0, -150, 0], "step": 0, "vert": false, "corte": "309.7 × 118.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 311.7+311.7 120+120", "barr": "4 barrenos de canto Ø8 × 22", "maq": "—", "une": ["ZOC0301A", "ZOC0302A"]}, {"code": "ZOT0307A", "id": 307, "name": "Costado derecho", "desc": "Entre frente y back de zoclo · Zoclo Izquierdo", "black": false, "med": "311.7 × 120 × 19.15", "size": [19.15, 120.0, 311.7], "pos": [-34.58, 60.0, -225.0], "from": [0, -150, 0], "step": 0, "vert": false, "corte": "309.7 × 118.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 311.7+311.7 120+120", "barr": "4 barrenos de canto Ø8 × 22", "maq": "—", "une": ["ZOC0301A", "ZOC0302A"]}, {"code": "ZOC0401A", "id": 401, "name": "Frente", "desc": "Frente de zoclo (remetido 50) · Zoclo Derecho", "black": false, "med": "1950 × 120 × 19.15", "size": [1950.0, 120.0, 19.15], "pos": [1000.0, 60.0, -59.58], "from": [0, -150, 0], "step": 0, "vert": false, "corte": "1948.0 × 118.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 1950+1950 120+120", "barr": "10 barrenos de cara Ø8 × 12", "maq": "—", "une": ["ZOT0403A", "ZOT0404A", "ZOT0405A", "ZOT0406A", "ZOT0407A"]}, {"code": "ZOC0402A", "id": 402, "name": "Back", "desc": "Trasero de zoclo · Zoclo Derecho", "black": false, "med": "1950 × 120 × 19.15", "size": [1950.0, 120.0, 19.15], "pos": [1000.0, 60.0, -390.43], "from": [0, -150, 0], "step": 0, "vert": false, "corte": "1948.0 × 118.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 1950+1950 120+120", "barr": "10 barrenos de cara Ø8 × 12", "maq": "—", "une": ["ZOT0403A", "ZOT0404A", "ZOT0405A", "ZOT0406A", "ZOT0407A"]}, {"code": "ZOT0403A", "id": 403, "name": "Costado izquierdo", "desc": "Entre frente y back de zoclo · Zoclo Derecho", "black": false, "med": "311.7 × 120 × 19.15", "size": [19.15, 120.0, 311.7], "pos": [34.58, 60.0, -225.0], "from": [0, -150, 0], "step": 0, "vert": false, "corte": "309.7 × 118.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 311.7+311.7 120+120", "barr": "4 barrenos de canto Ø8 × 22", "maq": "—", "une": ["ZOC0401A", "ZOC0402A"]}, {"code": "ZOT0404A", "id": 404, "name": "Relleno 1", "desc": "Entre frente y back de zoclo · Zoclo Derecho", "black": false, "med": "311.7 × 120 × 19.15", "size": [19.15, 120.0, 311.7], "pos": [517.29, 60.0, -225.0], "from": [0, -150, 0], "step": 0, "vert": false, "corte": "309.7 × 118.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 311.7+311.7 120+120", "barr": "4 barrenos de canto Ø8 × 22", "maq": "—", "une": ["ZOC0401A", "ZOC0402A"]}, {"code": "ZOT0405A", "id": 405, "name": "Relleno 2", "desc": "Entre frente y back de zoclo · Zoclo Derecho", "black": false, "med": "311.7 × 120 × 19.15", "size": [19.15, 120.0, 311.7], "pos": [1000.0, 60.0, -225.0], "from": [0, -150, 0], "step": 0, "vert": false, "corte": "309.7 × 118.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 311.7+311.7 120+120", "barr": "4 barrenos de canto Ø8 × 22", "maq": "—", "une": ["ZOC0401A", "ZOC0402A"]}, {"code": "ZOT0406A", "id": 406, "name": "Relleno 3", "desc": "Entre frente y back de zoclo · Zoclo Derecho", "black": false, "med": "311.7 × 120 × 19.15", "size": [19.15, 120.0, 311.7], "pos": [1482.71, 60.0, -225.0], "from": [0, -150, 0], "step": 0, "vert": false, "corte": "309.7 × 118.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 311.7+311.7 120+120", "barr": "4 barrenos de canto Ø8 × 22", "maq": "—", "une": ["ZOC0401A", "ZOC0402A"]}, {"code": "ZOT0407A", "id": 407, "name": "Costado derecho", "desc": "Entre frente y back de zoclo · Zoclo Derecho", "black": false, "med": "311.7 × 120 × 19.15", "size": [19.15, 120.0, 311.7], "pos": [1965.43, 60.0, -225.0], "from": [0, -150, 0], "step": 0, "vert": false, "corte": "309.7 × 118.0", "mat": "Walnut Heights 19.15 mm", "cantos": "Cubrecanto 1 mm: 311.7+311.7 120+120", "barr": "4 barrenos de canto Ø8 × 22", "maq": "—", "une": ["ZOC0401A", "ZOC0402A"]}];
+// Clavacotes 8×30: [x,y,z,eje,paso,entra,recibe]
+const D = [[-1980.8, 542.0, -332.4, "x", 3, "TAP0103A", "LAT0101A"], [-1980.8, 542.0, -70.0, "x", 3, "TAP0103A", "LAT0101A"], [-19.2, 542.0, -332.4, "x", 3, "TAP0103A", "LAT0102A"], [-19.2, 542.0, -70.0, "x", 3, "TAP0103A", "LAT0102A"], [-1980.8, 130.0, -332.4, "x", 1, "BAS0104A", "LAT0101A"], [-1980.8, 130.0, -50.0, "x", 1, "BAS0104A", "LAT0101A"], [-19.2, 130.0, -332.4, "x", 1, "BAS0104A", "LAT0102A"], [-19.2, 130.0, -50.0, "x", 1, "BAS0104A", "LAT0102A"], [-1980.8, 189.2, -372.0, "x", 1, "FON0105A", "LAT0101A"], [-1980.8, 336.0, -372.0, "x", 1, "FON0105A", "LAT0101A"], [-1980.8, 482.9, -372.0, "x", 1, "FON0105A", "LAT0101A"], [-19.2, 189.2, -372.0, "x", 1, "FON0105A", "LAT0102A"], [-19.2, 336.0, -372.0, "x", 1, "FON0105A", "LAT0102A"], [-19.2, 482.9, -372.0, "x", 1, "FON0105A", "LAT0102A"], [-1930.8, 532.9, -372.0, "y", 1, "FON0105A", "TAP0103A"], [-1665.8, 532.9, -372.0, "y", 1, "FON0105A", "TAP0103A"], [-1400.8, 532.9, -372.0, "y", 1, "FON0105A", "TAP0103A"], [-1130.8, 532.9, -372.0, "y", 1, "FON0105A", "TAP0103A"], [-865.8, 532.9, -372.0, "y", 1, "FON0105A", "TAP0103A"], [-600.8, 532.9, -372.0, "y", 1, "FON0105A", "TAP0103A"], [-335.8, 532.9, -372.0, "y", 1, "FON0105A", "TAP0103A"], [-69.2, 532.9, -372.0, "y", 1, "FON0105A", "TAP0103A"], [-1930.8, 139.2, -372.0, "y", 1, "FON0105A", "BAS0104A"], [-1665.8, 139.2, -372.0, "y", 1, "FON0105A", "BAS0104A"], [-1400.8, 139.2, -372.0, "y", 1, "FON0105A", "BAS0104A"], [-1130.8, 139.2, -372.0, "y", 1, "FON0105A", "BAS0104A"], [-865.8, 139.2, -372.0, "y", 1, "FON0105A", "BAS0104A"], [-600.8, 139.2, -372.0, "y", 1, "FON0105A", "BAS0104A"], [-335.8, 139.2, -372.0, "y", 1, "FON0105A", "BAS0104A"], [-69.2, 139.2, -372.0, "y", 1, "FON0105A", "BAS0104A"], [-1010.0, 532.9, -312.9, "y", 2, "DIV0106A", "TAP0103A"], [-1010.0, 532.9, -191.4, "y", 2, "DIV0106A", "TAP0103A"], [-1010.0, 532.9, -70.0, "y", 2, "DIV0106A", "TAP0103A"], [-1010.0, 139.2, -312.9, "y", 2, "DIV0106A", "BAS0104A"], [-1010.0, 139.2, -181.4, "y", 2, "DIV0106A", "BAS0104A"], [-1010.0, 139.2, -50.0, "y", 2, "DIV0106A", "BAS0104A"], [-1010.0, 189.2, -362.9, "z", 2, "DIV0106A", "FON0105A"], [-1010.0, 336.0, -362.9, "z", 2, "DIV0106A", "FON0105A"], [-1010.0, 482.9, -362.9, "z", 2, "DIV0106A", "FON0105A"], [-990.0, 532.9, -312.9, "y", 2, "DIV0107A", "TAP0103A"], [-990.0, 532.9, -191.4, "y", 2, "DIV0107A", "TAP0103A"], [-990.0, 532.9, -70.0, "y", 2, "DIV0107A", "TAP0103A"], [-990.0, 139.2, -312.9, "y", 2, "DIV0107A", "BAS0104A"], [-990.0, 139.2, -181.4, "y", 2, "DIV0107A", "BAS0104A"], [-990.0, 139.2, -50.0, "y", 2, "DIV0107A", "BAS0104A"], [-990.0, 189.2, -362.9, "z", 2, "DIV0107A", "FON0105A"], [-990.0, 336.0, -362.9, "z", 2, "DIV0107A", "FON0105A"], [-990.0, 482.9, -362.9, "z", 2, "DIV0107A", "FON0105A"], [19.2, 542.0, -332.4, "x", 3, "TAP0203A", "LAT0201A"], [19.2, 542.0, -70.0, "x", 3, "TAP0203A", "LAT0201A"], [1980.8, 542.0, -332.4, "x", 3, "TAP0203A", "LAT0202A"], [1980.8, 542.0, -70.0, "x", 3, "TAP0203A", "LAT0202A"], [19.2, 130.0, -332.4, "x", 1, "BAS0204A", "LAT0201A"], [19.2, 130.0, -50.0, "x", 1, "BAS0204A", "LAT0201A"], [1980.8, 130.0, -332.4, "x", 1, "BAS0204A", "LAT0202A"], [1980.8, 130.0, -50.0, "x", 1, "BAS0204A", "LAT0202A"], [19.2, 189.2, -372.0, "x", 1, "FON0205A", "LAT0201A"], [19.2, 336.0, -372.0, "x", 1, "FON0205A", "LAT0201A"], [19.2, 482.9, -372.0, "x", 1, "FON0205A", "LAT0201A"], [1980.8, 189.2, -372.0, "x", 1, "FON0205A", "LAT0202A"], [1980.8, 336.0, -372.0, "x", 1, "FON0205A", "LAT0202A"], [1980.8, 482.9, -372.0, "x", 1, "FON0205A", "LAT0202A"], [69.2, 532.9, -372.0, "y", 1, "FON0205A", "TAP0203A"], [334.2, 532.9, -372.0, "y", 1, "FON0205A", "TAP0203A"], [599.2, 532.9, -372.0, "y", 1, "FON0205A", "TAP0203A"], [869.2, 532.9, -372.0, "y", 1, "FON0205A", "TAP0203A"], [1134.2, 532.9, -372.0, "y", 1, "FON0205A", "TAP0203A"], [1399.2, 532.9, -372.0, "y", 1, "FON0205A", "TAP0203A"], [1664.2, 532.9, -372.0, "y", 1, "FON0205A", "TAP0203A"], [1930.8, 532.9, -372.0, "y", 1, "FON0205A", "TAP0203A"], [69.2, 139.2, -372.0, "y", 1, "FON0205A", "BAS0204A"], [334.2, 139.2, -372.0, "y", 1, "FON0205A", "BAS0204A"], [599.2, 139.2, -372.0, "y", 1, "FON0205A", "BAS0204A"], [869.2, 139.2, -372.0, "y", 1, "FON0205A", "BAS0204A"], [1134.2, 139.2, -372.0, "y", 1, "FON0205A", "BAS0204A"], [1399.2, 139.2, -372.0, "y", 1, "FON0205A", "BAS0204A"], [1664.2, 139.2, -372.0, "y", 1, "FON0205A", "BAS0204A"], [1930.8, 139.2, -372.0, "y", 1, "FON0205A", "BAS0204A"], [990.0, 532.9, -312.9, "y", 2, "DIV0206A", "TAP0203A"], [990.0, 532.9, -191.4, "y", 2, "DIV0206A", "TAP0203A"], [990.0, 532.9, -70.0, "y", 2, "DIV0206A", "TAP0203A"], [990.0, 139.2, -312.9, "y", 2, "DIV0206A", "BAS0204A"], [990.0, 139.2, -181.4, "y", 2, "DIV0206A", "BAS0204A"], [990.0, 139.2, -50.0, "y", 2, "DIV0206A", "BAS0204A"], [990.0, 189.2, -362.9, "z", 2, "DIV0206A", "FON0205A"], [990.0, 336.0, -362.9, "z", 2, "DIV0206A", "FON0205A"], [990.0, 482.9, -362.9, "z", 2, "DIV0206A", "FON0205A"], [1010.0, 532.9, -312.9, "y", 2, "DIV0207A", "TAP0203A"], [1010.0, 532.9, -191.4, "y", 2, "DIV0207A", "TAP0203A"], [1010.0, 532.9, -70.0, "y", 2, "DIV0207A", "TAP0203A"], [1010.0, 139.2, -312.9, "y", 2, "DIV0207A", "BAS0204A"], [1010.0, 139.2, -181.4, "y", 2, "DIV0207A", "BAS0204A"], [1010.0, 139.2, -50.0, "y", 2, "DIV0207A", "BAS0204A"], [1010.0, 189.2, -362.9, "z", 2, "DIV0207A", "FON0205A"], [1010.0, 336.0, -362.9, "z", 2, "DIV0207A", "FON0205A"], [1010.0, 482.9, -362.9, "z", 2, "DIV0207A", "FON0205A"], [-1965.0, 30.0, -69.2, "z", 0, "ZOT0303A", "ZOC0301A"], [-1965.0, 90.0, -69.2, "z", 0, "ZOT0303A", "ZOC0301A"], [-1965.0, 30.0, -380.9, "z", 0, "ZOT0303A", "ZOC0302A"], [-1965.0, 90.0, -380.9, "z", 0, "ZOT0303A", "ZOC0302A"], [-1482.3, 30.0, -69.2, "z", 0, "ZOT0304A", "ZOC0301A"], [-1482.3, 90.0, -69.2, "z", 0, "ZOT0304A", "ZOC0301A"], [-1482.3, 30.0, -380.9, "z", 0, "ZOT0304A", "ZOC0302A"], [-1482.3, 90.0, -380.9, "z", 0, "ZOT0304A", "ZOC0302A"], [-999.6, 30.0, -69.2, "z", 0, "ZOT0305A", "ZOC0301A"], [-999.6, 90.0, -69.2, "z", 0, "ZOT0305A", "ZOC0301A"], [-999.6, 30.0, -380.9, "z", 0, "ZOT0305A", "ZOC0302A"], [-999.6, 90.0, -380.9, "z", 0, "ZOT0305A", "ZOC0302A"], [-516.9, 30.0, -69.2, "z", 0, "ZOT0306A", "ZOC0301A"], [-516.9, 90.0, -69.2, "z", 0, "ZOT0306A", "ZOC0301A"], [-516.9, 30.0, -380.9, "z", 0, "ZOT0306A", "ZOC0302A"], [-516.9, 90.0, -380.9, "z", 0, "ZOT0306A", "ZOC0302A"], [-35.0, 30.0, -69.2, "z", 0, "ZOT0307A", "ZOC0301A"], [-35.0, 90.0, -69.2, "z", 0, "ZOT0307A", "ZOC0301A"], [-35.0, 30.0, -380.9, "z", 0, "ZOT0307A", "ZOC0302A"], [-35.0, 90.0, -380.9, "z", 0, "ZOT0307A", "ZOC0302A"], [35.0, 30.0, -69.2, "z", 0, "ZOT0403A", "ZOC0401A"], [35.0, 90.0, -69.2, "z", 0, "ZOT0403A", "ZOC0401A"], [35.0, 30.0, -380.9, "z", 0, "ZOT0403A", "ZOC0402A"], [35.0, 90.0, -380.9, "z", 0, "ZOT0403A", "ZOC0402A"], [517.7, 30.0, -69.2, "z", 0, "ZOT0404A", "ZOC0401A"], [517.7, 90.0, -69.2, "z", 0, "ZOT0404A", "ZOC0401A"], [517.7, 30.0, -380.9, "z", 0, "ZOT0404A", "ZOC0402A"], [517.7, 90.0, -380.9, "z", 0, "ZOT0404A", "ZOC0402A"], [1000.4, 30.0, -69.2, "z", 0, "ZOT0405A", "ZOC0401A"], [1000.4, 90.0, -69.2, "z", 0, "ZOT0405A", "ZOC0401A"], [1000.4, 30.0, -380.9, "z", 0, "ZOT0405A", "ZOC0402A"], [1000.4, 90.0, -380.9, "z", 0, "ZOT0405A", "ZOC0402A"], [1483.1, 30.0, -69.2, "z", 0, "ZOT0406A", "ZOC0401A"], [1483.1, 90.0, -69.2, "z", 0, "ZOT0406A", "ZOC0401A"], [1483.1, 30.0, -380.9, "z", 0, "ZOT0406A", "ZOC0402A"], [1483.1, 90.0, -380.9, "z", 0, "ZOT0406A", "ZOC0402A"], [1965.0, 30.0, -69.2, "z", 0, "ZOT0407A", "ZOC0401A"], [1965.0, 90.0, -69.2, "z", 0, "ZOT0407A", "ZOC0401A"], [1965.0, 30.0, -380.9, "z", 0, "ZOT0407A", "ZOC0402A"], [1965.0, 90.0, -380.9, "z", 0, "ZOT0407A", "ZOC0402A"]];
+const STEPS = [{"t": "Zoclos", "x": "Revisa tus 34 piezas (136 clavacotes 8 × 30, pegamento, mazo, prensas). Arma cada zoclo: clavacotes en los cantos de costados y rellenos (ZOT) y únelos entre el frente (remetido 50) y el back. Coloca los 2 zoclos en su lugar, a 25 de cada extremo.", "hl": ["ZOC0301A", "ZOC0302A", "ZOT0303A", "ZOT0304A", "ZOT0305A", "ZOT0306A", "ZOT0307A", "ZOC0401A", "ZOC0402A", "ZOT0403A", "ZOT0404A", "ZOT0405A", "ZOT0406A", "ZOT0407A"]}, {"t": "Piso y fondo", "x": "En cada módulo: clavacotes en los cantos del fondo (FON) y encájalo sobre el piso (BAS), remetido 18 desde atrás. El fondo del módulo izquierdo lleva 4 ranuras pasacables y el del derecho 2.", "hl": ["BAS0104A", "FON0105A", "BAS0204A", "FON0205A"]}, {"t": "Rellenos al centro", "x": "Clavacotes en los cantos de los 2 rellenos (DIV) y colócalos juntos al centro, pegados entre sí, del fondo al frente.", "hl": ["DIV0106A", "DIV0107A", "DIV0206A", "DIV0207A"]}, {"t": "Cielo", "x": "Pon el cielo (TAP) sobre fondo y rellenos, remetido 20 al frente (gola).", "hl": ["TAP0103A", "TAP0203A"]}, {"t": "Costados", "x": "Cierra cada módulo con sus 2 costados (LAT), cara barrenada hacia dentro. Prensa, escuadra y limpia el pegamento. Sube los módulos a los zoclos.", "hl": ["LAT0101A", "LAT0102A", "LAT0201A", "LAT0202A"]}, {"t": "Puertas", "x": "Coloca las 4 puertas (PUE) con sus bisagras (las barrena el taller). Holgura de 2 mm por lado y 4 entre puertas.", "hl": ["PUE0108A", "PUE0109A", "PUE0208A", "PUE0209A"]}, {"t": "Cubiertas", "x": "Coloca las 2 cubiertas de melamina negra (CUB): vuelan 18 al frente y se unen al centro por el lado sin canto.", "hl": ["CUB0110A", "CUB0210A"]}];
+const NCLAV = 136, NBIS = 0;
+const PROY = "SANTATERESATV";
+const EXEC_ANY = "https://script.google.com/macros/s/AKfycbwU8S0xRvafqPcW1UURPLtQM8dNLcuXqVSSnIQNq3xFNgz0Nz2H4H2lmZyHz-HAEIJ1/exec";
+const EXEC_JOHILL = "https://script.google.com/a/macros/johill.com.mx/s/AKfycbwU8S0xRvafqPcW1UURPLtQM8dNLcuXqVSSnIQNq3xFNgz0Nz2H4H2lmZyHz-HAEIJ1/exec";
+const CHK = {};
+const GRP = {1:"Módulo izquierdo · 2000",2:"Módulo derecho · 2000",3:"Zoclo izquierdo · 1950",4:"Zoclo derecho · 1950"};
+
+// ---------- Escena ----------
+const stage=document.getElementById('stage');
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+stage.prepend(renderer.domElement);
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(36,1,1,20000);
+cam.position.set(500,2100,5900);
+const ctl=new THREE.OrbitControls(cam,renderer.domElement);
+ctl.target.set(0,420,0);ctl.enableDamping=true;ctl.maxPolarAngle=Math.PI*0.49;ctl.minDistance=500;ctl.maxDistance=9000;
+scene.add(new THREE.HemisphereLight(0xfff6ea,0x8a7a66,0.78));
+const sun=new THREE.DirectionalLight(0xffffff,0.72);sun.position.set(1400,2600,1900);sun.castShadow=true;
+sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-2200,right:2200,top:2200,bottom:-2200,near:10,far:9000});scene.add(sun);
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(12000,12000),new THREE.MeshStandardMaterial({color:0xe9e2d6,roughness:1}));
+floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;scene.add(floor);
+
+// roble procedural (veta)
+function woodTex(vertical){
+  const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d');
+  g.fillStyle='#c9a77c';g.fillRect(0,0,256,256);
+  for(let i=0;i<70;i++){
+    const y=Math.random()*256, a=.05+Math.random()*.12;
+    g.strokeStyle=`rgba(${110+Math.random()*30|0},${75+Math.random()*20|0},${40+Math.random()*15|0},${a})`;
+    g.lineWidth=.6+Math.random()*2.2;g.beginPath();g.moveTo(0,y);
+    for(let x=0;x<=256;x+=32)g.lineTo(x,y+Math.sin(x/40+i)*2.2);g.stroke();
+  }
+  const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;
+  if(vertical){t.center.set(.5,.5);t.rotation=Math.PI/2;}
+  return t;
+}
+const texH=woodTex(false),texV=woodTex(true);
+const meshes={};
+P.forEach(p=>{
+  p.grp=+String(p.id)[0];
+  const geo=new THREE.BoxGeometry(...p.size);
+  const mat=p.black?new THREE.MeshStandardMaterial({color:0x1d1d1d,roughness:.5,transparent:true}):new THREE.MeshStandardMaterial({map:p.vert?texV:texH,roughness:.65,transparent:true});
+  const m=new THREE.Mesh(geo,mat);m.castShadow=m.receiveShadow=true;
+  const ed=new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color:0x3b2f22,transparent:true,opacity:.5}));
+  m.add(ed);m.userData={p,ed};
+  const c=document.createElement('canvas');c.width=256;c.height=64;const g=c.getContext('2d');
+  g.fillStyle='rgba(34,32,28,.88)';g.beginPath();g.roundRect?g.roundRect(0,0,256,64,14):g.rect(0,0,256,64);g.fill();
+  g.fillStyle='#fff';g.font='bold 30px system-ui,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(p.code,128,33);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false}));
+  sp.scale.set(240,60,1);sp.position.set(0,p.size[1]/2+40,0);sp.renderOrder=10;sp.visible=false;m.add(sp);m.userData.sp=sp;
+  scene.add(m);meshes[p.code]=m;
+});
+const dowels=D.map(d=>{
+  const m=new THREE.Mesh(new THREE.CylinderGeometry(4,4,30,12),new THREE.MeshStandardMaterial({color:0xe8cfa0,roughness:.8,transparent:true}));
+  if(d[3]==='x')m.rotation.z=Math.PI/2;else if(d[3]==='z')m.rotation.x=Math.PI/2;
+  m.position.set(d[0],d[1],d[2]);m.userData={step:d[4],a:d[5],b:d[6]};scene.add(m);return m;
+});
+
+// ---------- Estado ----------
+let tab='armado',step=0,sel=null,playing=null,drawMode=false;
+const anim=[];
+function lerp(a,b,t){return a+(b-a)*t}
+function ease(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2}
+
+function layout(animate){
+  anim.length=0;
+  P.forEach(p=>{
+    const m=meshes[p.code];let target,vis=true,op=1;
+    if(tab==='piezas'){target=p.pos;op=sel&&sel!==p.code?0.12:1;}
+    else if(step===0){target=[p.pos[0]+p.from[0]*0.9,p.pos[1]+p.from[1]*0.6,p.pos[2]+p.from[2]*0.9];}
+    else{vis=p.step<=step;target=p.pos;}
+    m.visible=vis;
+    const hl=(tab==='armado'&&STEPS[step].hl.includes(p.code))||(tab==='piezas'&&sel===p.code);
+    m.material.opacity=op;m.material.depthWrite=op===1;m.userData.ed.material.opacity=op===1?.5:.12;
+    m.material.emissive=new THREE.Color(hl?0x015089:0x000000);m.material.emissiveIntensity=hl?.3:0;
+    m.userData.sp.visible=(tab==='piezas'&&sel===p.code);
+    if(drawMode){m.material.map=null;m.material.color.set(hl?0xcfe3f2:0xffffff);}
+    else if(p.black){m.material.map=null;m.material.color.set(0x1d1d1d);}else{m.material.map=p.vert?texV:texH;m.material.color.set(0xffffff);}
+    m.material.needsUpdate=true;
+    if(animate&&tab==='armado'&&p.step===step&&step>0){
+      const s=[p.pos[0]+p.from[0],p.pos[1]+p.from[1],p.pos[2]+p.from[2]];m.position.set(...s);anim.push({m,s,t:target,t0:performance.now()});
+    }else m.position.set(...target);
+  });
+  dowels.forEach(d=>{
+    if(tab==='piezas'){d.visible=!sel||d.userData.a===sel||d.userData.b===sel;}
+    else d.visible=step>0&&d.userData.step<=step;
+    d.material.color.set(drawMode?0x999999:0xe8cfa0);
+  });
+  scene.background=new THREE.Color(drawMode?0xffffff:0xf2ece3);floor.visible=!drawMode;
+  document.querySelector('#prog i').style.width=(step/(STEPS.length-1)*100)+'%';
+}
+
+function lista(){
+  let h='',g=0;
+  P.forEach(x=>{if(x.grp!==g){g=x.grp;h+=`<div class="grp">${GRP[g]}</div>`;}
+    h+=`<div class="it ${x.code===sel?'on':''}" data-code="${x.code}"><span><b>${x.code}</b> · ${x.name}</span><span>${x.med}</span></div>`;});
+  return `<div class="list">${h}</div>`;
+}
+function renderSide(){
+  const s=document.getElementById('side');
+  if(tab==='armado'){
+    const st=STEPS[step];const nd=D.filter(d=>d[4]===step).length;
+    s.innerHTML=`<div class="kicker">Paso ${step} de ${STEPS.length-1}</div><h2>${st.t}</h2><p>${st.x}</p>
+      ${st.hl.map(c=>`<span class="tag" data-code="${c}">${c}</span>`).join('')}
+      ${nd?`<span class="tag hw">Clavacotes 8×30 · ${nd}</span>`:''}
+      ${step===0?lista()+`<div class="list"><div class="it"><span><b>Clavacote de madera</b> 8 × 30</span><span>× ${NCLAV}</span></div><div class="it"><span><b>Bisagra recta</b> cazoleta 35</span><span>× ${NBIS}</span></div></div>`:''}`;
+  }else if(tab==='piezas'){
+    const p=P.find(x=>x.code===sel);
+    const ck=p&&CHK[p.code];
+    const ban=!ck?'':ck.st==='espera'?`<div class="chk w">Marcando pieza en la hoja de control…</div>`
+      :ck.st==='ok'?`<div class="chk ok"><b>✔ ${ck.r.detalle}</b><br>${ck.r.avance}</div>`
+      :ck.st==='no'?`<div class="chk no"><b>✘ ${ck.r.titulo}</b><br>${ck.r.detalle}</div>`
+      :`<div class="chk w">No se pudo marcar desde aquí.<br><a class="btn pri" style="display:inline-block;margin-top:8px;text-decoration:none" href="${EXEC_JOHILL}?m=${PROY}&p=${p.code}">Marcar con cuenta johill</a></div>`;
+    s.innerHTML=ban+(p?`<div class="kicker">Pieza · paso ${p.step} del armado</div><h2>${p.code} · ${p.name}</h2>
+      <table><tr><td>Descripción</td><td>${p.desc}</td></tr><tr><td>Medida final</td><td>${p.med} mm</td></tr>
+      <tr><td>Medida de corte</td><td>${p.corte} mm</td></tr>
+      <tr><td>Material</td><td>${p.mat} · veta al largo</td></tr>
+      <tr><td>Cantos</td><td>${p.cantos}</td></tr><tr><td>Barrenos</td><td>${p.barr}</td></tr>
+      <tr><td>Se une con</td><td>${p.une.length?p.une.map(c=>`<span class="tag" data-code="${c}">${c}</span>`).join(''):'Va suelta'}</td></tr></table>
+      <button class="btn" data-step="${p.step}">Ver su paso de armado</button>`:`<h2>Piezas del mueble</h2><p>Toca una pieza para ver su ficha. Cada QR de etiqueta abre aquí la pieza correspondiente.</p>`)+lista();
+  }
+}
+document.getElementById('side').addEventListener('click',e=>{
+  const c=e.target.closest('[data-code]');if(c){location.hash=c.dataset.code;return;}
+  const b=e.target.closest('[data-step]');if(b){step=+b.dataset.step;setTab('armado',true);}
+});
+
+function setTab(t,anim){
+  tab=t;document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+  const lab=t==='etiquetas';
+  document.getElementById('labels').style.display=lab?'block':'none';
+  document.getElementById('stage').style.display=lab?'none':'block';
+  document.getElementById('side').style.display=lab?'none':'block';
+  document.getElementById('hud').style.display=t==='armado'?'flex':'none';
+  if(lab)buildLabels();else{renderSide();layout(anim);resize();}
+}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{stopPlay();if(b.dataset.tab==='piezas'){sel=null;}location.hash=b.dataset.tab;});
+
+function go(n){step=Math.max(0,Math.min(STEPS.length-1,n));renderSide();layout(true);}
+function stopPlay(){if(playing){clearInterval(playing);playing=null;document.getElementById('bPlay').textContent='▶ Reproducir';}}
+document.getElementById('bPrev').onclick=()=>{stopPlay();go(step-1)};
+document.getElementById('bNext').onclick=()=>{stopPlay();go(step+1)};
+document.getElementById('bPlay').onclick=()=>{
+  if(playing){stopPlay();return;}
+  if(step===STEPS.length-1)go(0);
+  document.getElementById('bPlay').textContent='❚❚ Pausa';
+  playing=setInterval(()=>{if(step>=STEPS.length-1)stopPlay();else go(step+1);},2800);
+};
+document.getElementById('mSala').onclick=()=>{drawMode=false;layout(false)};
+document.getElementById('mDib').onclick=()=>{drawMode=true;layout(false)};
+addEventListener('keydown',e=>{if(tab!=='armado')return;if(e.key==='ArrowRight'){stopPlay();go(step+1)}if(e.key==='ArrowLeft'){stopPlay();go(step-1)}});
+
+function marcar(code){
+  if(CHK[code])return;
+  CHK[code]={st:'espera'};
+  const cb='__chk'+Date.now();let hecho=false;
+  const fin=(st,r)=>{if(hecho)return;hecho=true;CHK[code]={st,r};delete window[cb];if(tab==='piezas'&&sel===code)renderSide();};
+  window[cb]=r=>fin(r&&r.ok?'ok':'no',r||{});
+  const sc=document.createElement('script');
+  sc.src=EXEC_ANY+'?m='+encodeURIComponent(PROY)+'&p='+encodeURIComponent(code)+'&v='+encodeURIComponent(location.origin+location.pathname)+'&callback='+cb;
+  sc.onerror=()=>fin('err');setTimeout(()=>fin('err'),15000);
+  document.head.appendChild(sc);
+}
+function route(){
+  let h=decodeURIComponent(location.hash.slice(1));
+  if(/^c-/i.test(h)){h=h.slice(2);const q=P.find(x=>x.code.toLowerCase()===h.toLowerCase());
+    if(q){marcar(q.code);history.replaceState(null,'',location.pathname+location.search+'#'+q.code);}}
+  const p=P.find(x=>x.code.toLowerCase()===h.toLowerCase()||String(x.id)===h);
+  if(p){sel=p.code;setTab('piezas');frame(p);}
+  else if(h==='piezas'){setTab('piezas');}
+  else if(h==='etiquetas'){setTab('etiquetas');}
+  else setTab('armado',false);
+}
+function frame(p){ctl.target.set(p.pos[0]*0.7,Math.max(150,p.pos[1]),p.pos[2]*0.5);}
+addEventListener('hashchange',route);
+
+function getBase(){
+  let v='';try{v=localStorage.getItem('santateresatv_base')||''}catch(e){}
+  if(!v)v=PUBLIC_URL.startsWith('http')?PUBLIC_URL:location.href.split('#')[0];
+  return v.split('#')[0];
+}
+function buildLabels(){
+  const inp=document.getElementById('baseUrl');if(!inp.value)inp.value=getBase();
+  const base=inp.value.trim().split('#')[0];
+  const qa=qrcode(0,'M');qa.addData(base+'#armado');qa.make();
+  const full=`<div class="lab" style="border-style:solid;border-color:#015089">${qa.createSvgTag({cellSize:3,margin:1,scalable:true})}<div><div class="c">ARMADO</div><div class="n">Mueble de TV completo</div><div class="m">Armado paso a paso · ${P.length} piezas</div></div></div>`;
+  document.getElementById('sheet').innerHTML=full+P.map(p=>{
+    const q=qrcode(0,'M');q.addData(base+'#'+p.code);q.make();
+    return `<div class="lab">${q.createSvgTag({cellSize:3,margin:1,scalable:true})}<div><div class="c">${p.code}</div><div class="n">${p.name}</div><div class="m">${p.med} mm · Santa Teresa</div></div></div>`;
+  }).join('');
+  document.getElementById('msg').textContent='Cada QR abre: '+base+'#CÓDIGO';
+}
+document.getElementById('bApply').onclick=()=>{try{localStorage.setItem('santateresatv_base',document.getElementById('baseUrl').value.trim())}catch(e){}buildLabels();};
+
+function resize(){const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();}
+addEventListener('resize',resize);
+(function loop(){
+  requestAnimationFrame(loop);
+  for(let i=anim.length-1;i>=0;i--){const a=anim[i];let t=Math.min(1,(performance.now()-a.t0)/900);const k=ease(t);
+    a.m.position.set(lerp(a.s[0],a.t[0],k),lerp(a.s[1],a.t[1],k),lerp(a.s[2],a.t[2],k));if(t>=1)anim.splice(i,1);}
+  ctl.update();renderer.render(scene,cam);
+})();
+resize();route();
+</script>
+</body>
+</html>
