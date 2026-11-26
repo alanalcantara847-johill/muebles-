@@ -281,7 +281,7 @@ function route(){
   else if(h==='etiquetas'){setTab('etiquetas');}
   else setTab('armado',false);
 }
-function frame(p){ctl.target.set(p.pos[0]*0.7,Math.max(150,p.pos[1]),p.pos[2]*0.5);}
+function frame(p){const ps=P.filter(x=>x.grp===p.grp);const lo=[0,1,2].map(k=>Math.min(...ps.map(x=>x.pos[k]-x.size[k]/2))),hi=[0,1,2].map(k=>Math.max(...ps.map(x=>x.pos[k]+x.size[k]/2)));const c=[0,1,2].map(k=>(lo[k]+hi[k])/2),w=Math.max(hi[0]-lo[0],hi[1]-lo[1]);const asp=Math.max(0.45,Math.min(1.6,stage.clientWidth/Math.max(1,stage.clientHeight)));const d=Math.max(1400,w*2.1/asp);ctl.target.set(c[0],c[1],c[2]);cam.position.set(c[0]+d*0.32,c[1]+d*0.38,c[2]+d*0.9);ctl.update();}
 addEventListener('hashchange',route);
 
 function getBase(){
