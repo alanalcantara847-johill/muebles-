@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Santa Teresa · Alacena y vitrina · Armado 3D y piezas</title>
+<style>
+:root{--bg:#f6f3ee;--ink:#22201c;--mut:#6d665c;--acc:#015089;--card:#fff;--line:#e3ddd3}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg)}
+#app{display:flex;flex-direction:column;height:100%}
+header{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--card);flex-wrap:wrap}
+header h1{font-size:16px;margin:0;font-weight:650}
+header .sub{font-size:12px;color:var(--mut)}
+nav{margin-left:auto;display:flex;gap:4px}
+nav button,.btn{border:1px solid var(--line);background:var(--card);padding:7px 12px;border-radius:8px;font:inherit;font-size:13px;cursor:pointer;color:var(--ink)}
+nav button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+main{flex:1;display:flex;min-height:0}
+#side{width:370px;max-width:100%;overflow:auto;padding:14px;border-right:1px solid var(--line);background:var(--card)}
+#stage{flex:1;position:relative;min-height:300px}
+#stage canvas{display:block;width:100%;height:100%}
+#hud{position:absolute;left:12px;right:12px;bottom:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#prog{flex:1;min-width:120px;height:6px;background:#0001;border-radius:4px;overflow:hidden}
+#prog i{display:block;height:100%;background:var(--acc);width:0;transition:width .3s}
+#modes{position:absolute;top:12px;right:12px;display:flex;gap:4px}
+.kicker{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--acc);font-weight:700}
+h2{font-size:19px;margin:4px 0 8px}
+p{line-height:1.45;font-size:14px;margin:6px 0}
+.tag{display:inline-block;background:#f1ebe2;border-radius:6px;padding:2px 7px;font-size:12px;font-weight:600;margin:2px 3px 2px 0;cursor:pointer}
+.tag.hw{background:#e6eef5}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+td{padding:5px 2px;border-bottom:1px solid var(--line);vertical-align:top}
+td:first-child{color:var(--mut);width:38%}
+.list .it{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;margin:5px 0;cursor:pointer;font-size:13px}
+.list .it:hover,.list .it.on{border-color:var(--acc);background:#f0f6fb}
+.list .it b{font-size:13px}
+.grp{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:12px 0 2px;font-weight:700}
+#labels{display:none;flex:1;overflow:auto;padding:16px;background:#fff}
+.sheet{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.lab{border:1px dashed #bbb;border-radius:6px;padding:10px;display:flex;gap:10px;align-items:center}
+.lab svg{width:96px;height:96px;flex:none}
+.lab .c{font-weight:800;font-size:15px}
+.lab .n{font-size:12px}
+.lab .m{font-size:11px;color:var(--mut)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.row input{flex:1;min-width:240px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:13px}
+#msg{font-size:12px;color:var(--mut)}
+.chk{border-radius:10px;padding:12px 14px;margin:0 0 12px;font-size:14px;line-height:1.45}
+.chk.ok{background:#d6f0dc;color:#1e7e34;border:1px solid #9fd7ad}
+.chk.no{background:#fbe1de;color:#a93226;border:1px solid #f0aaa2}
+.chk.w{background:#fff4e5;color:#7a4b00;border:1px solid #f5c98b}
+@media (max-width:760px){
+  main{flex-direction:column-reverse}
+  #side{width:100%;max-height:46%;border-right:0;border-top:1px solid var(--line)}
+  nav{margin-left:0;width:100%}
+  nav button{flex:1}
+}
+</style>
+<link rel="preconnect" href="https://script.google.com">
+<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<script>(function(){var h=decodeURIComponent(location.hash.slice(1));if(!/^c-/i.test(h))return;var c=h.slice(2).toUpperCase();var E=window.__EARLY={code:c,st:'espera',r:{}};var fin=function(st,r){if(E.st!=='espera')return;E.st=st;E.r=r||{};if(window.__earlyDone)window.__earlyDone();};window.__earlyCb=function(r){fin(r&&r.ok?'ok':'no',r)};var s=document.createElement('script');s.src='https://script.google.com/macros/s/AKfycbwU8S0xRvafqPcW1UURPLtQM8dNLcuXqVSSnIQNq3xFNgz0Nz2H4H2lmZyHz-HAEIJ1/exec?m=SANTATERESAAV&p='+encodeURIComponent(c)+'&v='+encodeURIComponent(location.origin+location.pathname)+'&callback=__earlyCb';s.onerror=function(){fin('err')};setTimeout(function(){fin('err')},15000);document.head.appendChild(s);})();</script>
+</head>
+<body>
+<div id="app">
+<header>
+  <div><h1>Santa Teresa · Alacena y vitrina</h1><div class="sub">MDF melamina Avella 15.15 mm · 22 piezas · 2 muebles · Johill</div></div>
+  <nav>
+    <button data-tab="armado" class="on">Armado</button>
+    <button data-tab="piezas">Piezas</button>
+    <button data-tab="etiquetas">Etiquetas QR</button>
+  </nav>
+</header>
+<main id="main">
+  <aside id="side"></aside>
+  <section id="stage">
+    <div id="modes"><button class="btn" id="mSala">Sala</button><button class="btn" id="mDib">Dibujo</button></div>
+    <div id="hud">
+      <button class="btn" id="bPrev">◀ Anterior</button>
+      <button class="btn pri" id="bPlay">▶ Reproducir</button>
+      <button class="btn" id="bNext">Siguiente ▶</button>
+      <div id="prog"><i></i></div>
+    </div>
+  </section>
+  <section id="labels">
+    <div class="row">
+      <input id="baseUrl" placeholder="Dirección pública de esta página">
+      <button class="btn" id="bApply">Actualizar QR</button>
+    </div>
+    <div id="msg"></div>
+    <div class="sheet" id="sheet"></div>
+  </section>
+</main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+// ---------- Datos (Santa Teresa · Alacena y vitrina) ----------
+const PUBLIC_URL = "https://alanalcantara847-johill.github.io/muebles-/santa-teresa-alacena-vitrina/";
+const P = [{"code": "LAT02101A", "id": 2101, "name": "Lateral izquierdo", "desc": "Lateral (bajo la superficie) · Gabinete alacena", "med": "664.85 × 405 × 15.15", "size": [15.15, 664.85, 405.0], "pos": [-1427.42, 332.43, -202.5], "from": [-320, 0, 0], "step": 3, "vert": true, "corte": "662.9 × 403", "mat": "MDF melamina Avella 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 664.85+664.85 405+405", "barr": "3 barrenos de canto Ø8 × 22 (Z = T/2) · 30 barrenos de cara Ø8 × 12", "maq": "—", "une": ["ARM02105A", "ARM02106A", "BAS02107A", "ENT02109A", "ENT02110A", "FON02104A", "TAP02103A"]}, {"code": "LAT02102A", "id": 2102, "name": "Lateral derecho", "desc": "Lateral (bajo la superficie) · Gabinete alacena", "med": "664.85 × 405 × 15.15", "size": [15.15, 664.85, 405.0], "pos": [257.42, 332.43, -202.5], "from": [320, 0, 0], "step": 3, "vert": true, "corte": "662.9 × 403", "mat": "MDF melamina Avella 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 664.85+664.85 405+405", "barr": "3 barrenos de canto Ø8 × 22 (Z = T/2) · 30 barrenos de cara Ø8 × 12", "maq": "—", "une": ["ARM02105A", "ARM02106A", "BAS02107A", "ENT02111A", "ENT02112A", "FON02104A", "TAP02103A"]}, {"code": "TAP02103A", "id": 2103, "name": "Superficie", "desc": "Superficie sobrepuesta sobre los laterales · Gabinete alacena", "med": "1700 × 405 × 15.15", "size": [1700.0, 15.15, 405.0], "pos": [-585.0, 672.42, -202.5], "from": [0, 320, 0], "step": 4, "vert": false, "corte": "1698 × 403", "mat": "MDF melamina Avella 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 1700+1700 405+405", "barr": "15 barrenos de cara Ø8 × 12", "maq": "—", "une": ["ARM02106A", "DIV02108A", "FON02104A", "LAT02101A", "LAT02102A"]}, {"code": "FON02104A", "id": 2104, "name": "Pared", "desc": "Pared (fondo) entre laterales, remetida 15.15 desde atrás · Gabinete alacena", "med": "1669.7 × 664.85 × 15.15", "size": [1669.7, 664.85, 15.15], "pos": [-585.0, 332.43, -382.27], "from": [0, 0, -420], "step": 2, "vert": false, "corte": "1667.7 × 662.9", "mat": "MDF melamina Avella 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 1669.7+1669.7 664.85+664.85", "barr": "9 barrenos de canto Ø8 × 22 (Z = T/2) · 6 barrenos de cara Ø8 × 12", "maq": "—", "une": ["BAS02107A", "DIV02108A", "LAT02101A", "LAT02102A", "TAP02103A"]}, {"code": "ARM02105A", "id": 2105, "name": "Cargador abajo", "desc": "Cargador detrás de la pared (85 a 185) · Gabinete alacena", "med": "1669.7 × 100 × 15.15", "size": [1669.7, 100, 15.15], "pos": [-585.0, 135.0, -397.43], "from": [0, 0, -380], "step": 2, "vert": false, "corte": "1667.7 × 98", "mat": "MDF melamina Avella 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 1669.7+1669.7 100+100", "barr": "4 barrenos de canto Ø8 × 22 (Z = T/2)", "maq": "—", "une": ["LAT02101A", "LAT02102A"]}, {"code": "ARM02106A", "id": 2106, "name": "Cargador arriba", "desc": "Cargador detrás de la pared, bajo la superficie · Gabinete alacena", "med": "1669.7 × 100 × 15.15", "size": [1669.7, 100.0, 15.15], "pos": [-585.0, 614.85, -397.43], "from": [0, 0, -380], "step": 2, "vert": false, "corte": "1667.7 × 98", "mat": "MDF melamina Avella 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 1669.7+1669.7 100+100", "barr": "7 barrenos de canto Ø8 × 22 (Z = T/2)", "maq": "—", "une": ["LAT02101A", "LAT02102A", "TAP02103A"]}, {"code": "BAS02107A", "id": 2107, "name": "Base", "desc": "Base entre laterales, a 15 del piso · Gabinete alacena", "med": "1669.7 × 359.55 × 15.15", "size": [1669.7, 15.15, 359.55], "pos": [-585.0, 22.57, -194.92], "from": [0, 0, 380], "step": 1, "vert": false, "corte": "1667.7 × 357.6", "mat": "MDF melamina Avella 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 1669.7+1669.7 359.55+359.55", "barr": "9 barrenos de canto Ø8 × 22 (Z = T/2) · 3 barrenos de cara Ø8 × 12", "maq": "—", "une": ["DIV02108A", "FON02104A", "LAT02101A", "LAT02102A"]}, {"code": "DIV02108A", "id": 2108, "name": "Interno", "desc": "Interno al centro, de la base a la superficie · Gabinete alacena", "med": "634.7 × 359.55 × 15.15", "size": [15.15, 634.7, 359.55], "pos": [-585.0, 347.5, -194.92], "from": [0, 250, 0], "step": 1, "vert": true, "corte": "632.7 × 357.6", "mat": "MDF melamina Avella 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 634.7+634.7 359.55+359.55", "barr": "9 barrenos de canto Ø8 × 22 (Z = T/2) · 20 barrenos de cara Ø8 × 12", "maq": "—", "une": ["BAS02107A", "ENT02111A", "ENT02112A", "FON02104A", "TAP02103A"]}, {"code": "ENT02109A", "id": 2109, "name": "Repisa izq 1", "desc": "Repisa móvil sobre pernos Ø5 (1.5 de holgura al lateral) · Gabinete alacena", "med": "825.77 × 344.55 × 15.15", "size": [825.77, 15.15, 344.55], "pos": [-1005.46, 287.57, -202.42], "from": [0, 0, 400], "step": 5, "vert": false, "corte": "823.8 × 342.6", "mat": "MDF melamina Avella 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 825.77+825.77 344.55+344.55", "barr": "Sin barrenos", "maq": "—", "une": []}, {"code": "ENT02110A", "id": 2110, "name": "Repisa izq 2", "desc": "Repisa móvil sobre pernos Ø5 (1.5 de holgura al lateral) · Gabinete alacena", "med": "825.77 × 344.55 × 15.15", "size": [825.77, 15.15, 344.55], "pos": [-1005.46, 497.57, -202.42], "from": [0, 0, 400], "step": 5, "vert": false, "corte": "823.8 × 342.6", "mat": "MDF melamina Avella 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 825.77+825.77 344.55+344.55", "barr": "Sin barrenos", "maq": "—", "une": []}, {"code": "ENT02111A", "id": 2111, "name": "Repisa der 1", "desc": "Repisa móvil sobre pernos Ø5 (1.5 de holgura al lateral) · Gabinete alacena", "med": "825.77 × 344.55 × 15.15", "size": [825.77, 15.15, 344.55], "pos": [-164.54, 287.57, -202.42], "from": [0, 0, 400], "step": 5, "vert": false, "corte": "823.8 × 342.6", "mat": "MDF melamina Avella 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 825.77+825.77 344.55+344.55", "barr": "Sin barrenos", "maq": "—", "une": []}, {"code": "ENT02112A", "id": 2112, "name": "Repisa der 2", "desc": "Repisa móvil sobre pernos Ø5 (1.5 de holgura al lateral) · Gabinete alacena", "med": "825.77 × 344.55 × 15.15", "size": [825.77, 15.15, 344.55], "pos": [-164.54, 497.57, -202.42], "from": [0, 0, 400], "step": 5, "vert": false, "corte": "823.8 × 342.6", "mat": "MDF melamina Avella 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 825.77+825.77 344.55+344.55", "barr": "Sin barrenos", "maq": "—", "une": []}, {"code": "PUE02113A", "id": 2113, "name": "Puerta izquierda", "desc": "Puerta embutida (1 mm de luz al lateral y al centro), sin bisagras en el STEP · Gabinete alacena", "med": "664.85 × 832.85 × 15.15", "size": [832.85, 664.85, 15.15], "pos": [-1002.42, 332.43, -7.58], "from": [0, 0, 450], "step": 6, "vert": true, "corte": "662.9 × 830.9", "mat": "MDF melamina Avella 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 664.85+664.85 832.85+832.85", "barr": "Sin barrenos", "maq": "—", "une": []}, {"code": "PUE02114A", "id": 2114, "name": "Puerta derecha", "desc": "Puerta embutida (1 mm de luz al lateral y al centro), sin bisagras en el STEP · Gabinete alacena", "med": "664.85 × 832.85 × 15.15", "size": [832.85, 664.85, 15.15], "pos": [-167.58, 332.43, -7.58], "from": [0, 0, 450], "step": 6, "vert": true, "corte": "662.9 × 830.9", "mat": "MDF melamina Avella 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 664.85+664.85 832.85+832.85", "barr": "Sin barrenos", "maq": "—", "une": []}, {"code": "LAT02201A", "id": 2201, "name": "Lateral izquierdo", "desc": "Lateral (bajo la superficie) · Módulo bajo vitrina", "med": "784.85 × 450 × 15.15", "size": [15.15, 784.85, 450.0], "pos": [672.57, 392.43, -225.0], "from": [-320, 0, 0], "step": 9, "vert": true, "corte": "782.9 × 448", "mat": "MDF melamina Avella 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 784.85+784.85 450+450", "barr": "3 barrenos de canto Ø8 × 22 (Z = T/2) · 14 barrenos de cara Ø8 × 12", "maq": "—", "une": ["BAS02206A", "ENT02207A", "ENT02208A", "FON02204A", "TAP02203A", "ZOC02205A"]}, {"code": "LAT02202A", "id": 2202, "name": "Lateral derecho", "desc": "Lateral (bajo la superficie) · Módulo bajo vitrina", "med": "784.85 × 450 × 15.15", "size": [15.15, 784.85, 450.0], "pos": [1427.43, 392.43, -225.0], "from": [320, 0, 0], "step": 9, "vert": true, "corte": "782.9 × 448", "mat": "MDF melamina Avella 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 784.85+784.85 450+450", "barr": "3 barrenos de canto Ø8 × 22 (Z = T/2) · 14 barrenos de cara Ø8 × 12", "maq": "—", "une": ["BAS02206A", "ENT02207A", "ENT02208A", "FON02204A", "TAP02203A", "ZOC02205A"]}, {"code": "TAP02203A", "id": 2203, "name": "Superficie", "desc": "Superficie sobrepuesta sobre los laterales · Módulo bajo vitrina", "med": "770 × 450 × 15.15", "size": [770.0, 15.15, 450.0], "pos": [1050.0, 792.42, -225.0], "from": [0, 320, 0], "step": 10, "vert": false, "corte": "768 × 448", "mat": "MDF melamina Avella 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 770+770 450+450", "barr": "9 barrenos de cara Ø8 × 12", "maq": "—", "une": ["FON02204A", "LAT02201A", "LAT02202A"]}, {"code": "FON02204A", "id": 2204, "name": "Pared", "desc": "Pared (fondo) entre laterales, al ras de atrás · Módulo bajo vitrina", "med": "739.7 × 784.85 × 15.15", "size": [739.7, 784.85, 15.15], "pos": [1050.0, 392.43, -442.43], "from": [0, 0, -420], "step": 8, "vert": false, "corte": "737.7 × 782.9", "mat": "MDF melamina Avella 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 739.7+739.7 784.85+784.85", "barr": "9 barrenos de canto Ø8 × 22 (Z = T/2) · 9 barrenos de cara Ø8 × 12", "maq": "—", "une": ["BAS02206A", "ENT02207A", "ENT02208A", "LAT02201A", "LAT02202A", "TAP02203A"]}, {"code": "ZOC02205A", "id": 2205, "name": "Zoclo", "desc": "Zoclo al frente entre laterales · Módulo bajo vitrina", "med": "739.7 × 114 × 15.15", "size": [739.7, 114, 15.15], "pos": [1050.0, 57.0, -7.58], "from": [0, -150, 0], "step": 7, "vert": false, "corte": "737.7 × 112", "mat": "MDF melamina Avella 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 739.7+739.7 114+114", "barr": "7 barrenos de canto Ø8 × 22 (Z = T/2)", "maq": "—", "une": ["BAS02206A", "LAT02201A", "LAT02202A"]}, {"code": "BAS02206A", "id": 2206, "name": "Base", "desc": "Base sobre el zoclo, entre laterales y hasta la pared · Módulo bajo vitrina", "med": "739.7 × 434.85 × 15.15", "size": [739.7, 15.15, 434.85], "pos": [1050.0, 121.58, -217.43], "from": [0, 0, 380], "step": 7, "vert": false, "corte": "737.7 × 432.9", "mat": "MDF melamina Avella 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 739.7+739.7 434.85+434.85", "barr": "9 barrenos de canto Ø8 × 22 (Z = T/2) · 3 barrenos de cara Ø8 × 12", "maq": "—", "une": ["FON02204A", "LAT02201A", "LAT02202A", "ZOC02205A"]}, {"code": "ENT02207A", "id": 2207, "name": "Repisa 1", "desc": "Repisa fija con taquetes, 15 adentro al frente · Módulo bajo vitrina", "med": "739.7 × 419.85 × 15.15", "size": [739.7, 15.15, 419.85], "pos": [1050.0, 386.57, -224.93], "from": [0, 0, 400], "step": 8, "vert": false, "corte": "737.7 × 417.9", "mat": "MDF melamina Avella 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 739.7+739.7 419.85+419.85", "barr": "9 barrenos de canto Ø8 × 22 (Z = T/2)", "maq": "—", "une": ["FON02204A", "LAT02201A", "LAT02202A"]}, {"code": "ENT02208A", "id": 2208, "name": "Repisa 2", "desc": "Repisa fija con taquetes, 15 adentro al frente · Módulo bajo vitrina", "med": "739.7 × 419.85 × 15.15", "size": [739.7, 15.15, 419.85], "pos": [1050.0, 621.58, -224.93], "from": [0, 0, 400], "step": 8, "vert": false, "corte": "737.7 × 417.9", "mat": "MDF melamina Avella 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 739.7+739.7 419.85+419.85", "barr": "9 barrenos de canto Ø8 × 22 (Z = T/2)", "maq": "—", "une": ["FON02204A", "LAT02201A", "LAT02202A"]}];
+// Clavacotes 8×30: [x,y,z,eje,paso,entra,recibe]
+const D = [[-1427.4, 664.9, -360.0, "y", 3, "LAT02101A", "TAP02103A"], [-1427.4, 664.9, -202.5, "y", 3, "LAT02101A", "TAP02103A"], [-1427.4, 664.9, -45.0, "y", 3, "LAT02101A", "TAP02103A"], [257.4, 664.9, -360.0, "y", 3, "LAT02102A", "TAP02103A"], [257.4, 664.9, -202.5, "y", 3, "LAT02102A", "TAP02103A"], [257.4, 664.9, -45.0, "y", 3, "LAT02102A", "TAP02103A"], [-1419.8, 45.0, -382.3, "x", 2, "FON02104A", "LAT02101A"], [-1419.8, 332.5, -382.3, "x", 2, "FON02104A", "LAT02101A"], [-1419.8, 619.9, -382.3, "x", 2, "FON02104A", "LAT02101A"], [249.8, 45.0, -382.3, "x", 2, "FON02104A", "LAT02102A"], [249.8, 332.5, -382.3, "x", 2, "FON02104A", "LAT02102A"], [249.8, 619.9, -382.3, "x", 2, "FON02104A", "LAT02102A"], [-1374.8, 664.9, -382.3, "y", 2, "FON02104A", "TAP02103A"], [-584.9, 664.9, -382.3, "y", 2, "FON02104A", "TAP02103A"], [204.8, 664.9, -382.3, "y", 2, "FON02104A", "TAP02103A"], [-1419.8, 110.0, -397.4, "x", 2, "ARM02105A", "LAT02101A"], [-1419.8, 160.0, -397.4, "x", 2, "ARM02105A", "LAT02101A"], [249.8, 110.0, -397.4, "x", 2, "ARM02105A", "LAT02102A"], [249.8, 160.0, -397.4, "x", 2, "ARM02105A", "LAT02102A"], [-1419.8, 589.9, -397.4, "x", 2, "ARM02106A", "LAT02101A"], [-1419.8, 639.9, -397.4, "x", 2, "ARM02106A", "LAT02101A"], [249.8, 589.9, -397.4, "x", 2, "ARM02106A", "LAT02102A"], [249.8, 639.9, -397.4, "x", 2, "ARM02106A", "LAT02102A"], [-1374.8, 664.9, -397.4, "y", 2, "ARM02106A", "TAP02103A"], [-584.9, 664.9, -397.4, "y", 2, "ARM02106A", "TAP02103A"], [204.8, 664.9, -397.4, "y", 2, "ARM02106A", "TAP02103A"], [-1419.8, 22.6, -329.7, "x", 1, "BAS02107A", "LAT02101A"], [-1419.8, 22.6, -194.7, "x", 1, "BAS02107A", "LAT02101A"], [-1419.8, 22.6, -60.1, "x", 1, "BAS02107A", "LAT02101A"], [249.8, 22.6, -329.7, "x", 1, "BAS02107A", "LAT02102A"], [249.8, 22.6, -194.7, "x", 1, "BAS02107A", "LAT02102A"], [249.8, 22.6, -60.1, "x", 1, "BAS02107A", "LAT02102A"], [-1374.8, 22.6, -374.7, "z", 1, "BAS02107A", "FON02104A"], [-584.9, 22.6, -374.7, "z", 1, "BAS02107A", "FON02104A"], [204.8, 22.6, -374.7, "z", 1, "BAS02107A", "FON02104A"], [-585.0, 664.9, -329.7, "y", 1, "DIV02108A", "TAP02103A"], [-585.0, 664.9, -194.7, "y", 1, "DIV02108A", "TAP02103A"], [-585.0, 664.9, -60.1, "y", 1, "DIV02108A", "TAP02103A"], [-585.0, 75.2, -374.7, "z", 1, "DIV02108A", "FON02104A"], [-585.0, 347.6, -374.7, "z", 1, "DIV02108A", "FON02104A"], [-585.0, 619.9, -374.7, "z", 1, "DIV02108A", "FON02104A"], [-585.0, 30.1, -329.7, "y", 1, "DIV02108A", "BAS02107A"], [-585.0, 30.1, -194.7, "y", 1, "DIV02108A", "BAS02107A"], [-585.0, 30.1, -60.1, "y", 1, "DIV02108A", "BAS02107A"], [672.6, 784.9, -405.0, "y", 9, "LAT02201A", "TAP02203A"], [672.6, 784.9, -225.0, "y", 9, "LAT02201A", "TAP02203A"], [672.6, 784.9, -45.0, "y", 9, "LAT02201A", "TAP02203A"], [1427.4, 784.9, -405.0, "y", 9, "LAT02202A", "TAP02203A"], [1427.4, 784.9, -225.0, "y", 9, "LAT02202A", "TAP02203A"], [1427.4, 784.9, -45.0, "y", 9, "LAT02202A", "TAP02203A"], [680.2, 45.0, -442.4, "x", 8, "FON02204A", "LAT02201A"], [680.2, 392.5, -442.4, "x", 8, "FON02204A", "LAT02201A"], [680.2, 739.9, -442.4, "x", 8, "FON02204A", "LAT02201A"], [1419.8, 45.0, -442.4, "x", 8, "FON02204A", "LAT02202A"], [1419.8, 392.5, -442.4, "x", 8, "FON02204A", "LAT02202A"], [1419.8, 739.9, -442.4, "x", 8, "FON02204A", "LAT02202A"], [725.2, 784.9, -442.4, "y", 8, "FON02204A", "TAP02203A"], [1050.2, 784.9, -442.4, "y", 8, "FON02204A", "TAP02203A"], [1374.8, 784.9, -442.4, "y", 8, "FON02204A", "TAP02203A"], [680.2, 28.5, -7.6, "x", 7, "ZOC02205A", "LAT02201A"], [680.2, 85.5, -7.6, "x", 7, "ZOC02205A", "LAT02201A"], [1419.8, 28.5, -7.6, "x", 7, "ZOC02205A", "LAT02202A"], [1419.8, 85.5, -7.6, "x", 7, "ZOC02205A", "LAT02202A"], [725.2, 114, -7.6, "y", 7, "ZOC02205A", "BAS02206A"], [1050.2, 114, -7.6, "y", 7, "ZOC02205A", "BAS02206A"], [1374.8, 114, -7.6, "y", 7, "ZOC02205A", "BAS02206A"], [680.2, 121.6, -389.9, "x", 7, "BAS02206A", "LAT02201A"], [680.2, 121.6, -217.4, "x", 7, "BAS02206A", "LAT02201A"], [680.2, 121.6, -45.0, "x", 7, "BAS02206A", "LAT02201A"], [1419.8, 121.6, -389.9, "x", 7, "BAS02206A", "LAT02202A"], [1419.8, 121.6, -217.4, "x", 7, "BAS02206A", "LAT02202A"], [1419.8, 121.6, -45.0, "x", 7, "BAS02206A", "LAT02202A"], [725.2, 121.6, -434.9, "z", 7, "BAS02206A", "FON02204A"], [1050.2, 121.6, -434.9, "z", 7, "BAS02206A", "FON02204A"], [1374.8, 121.6, -434.9, "z", 7, "BAS02206A", "FON02204A"], [680.2, 386.6, -389.9, "x", 8, "ENT02207A", "LAT02201A"], [680.2, 386.6, -224.9, "x", 8, "ENT02207A", "LAT02201A"], [680.2, 386.6, -60.0, "x", 8, "ENT02207A", "LAT02201A"], [1419.8, 386.6, -389.9, "x", 8, "ENT02207A", "LAT02202A"], [1419.8, 386.6, -224.9, "x", 8, "ENT02207A", "LAT02202A"], [1419.8, 386.6, -60.0, "x", 8, "ENT02207A", "LAT02202A"], [725.2, 386.6, -434.9, "z", 8, "ENT02207A", "FON02204A"], [1050.2, 386.6, -434.9, "z", 8, "ENT02207A", "FON02204A"], [1374.8, 386.6, -434.9, "z", 8, "ENT02207A", "FON02204A"], [680.2, 621.6, -389.9, "x", 8, "ENT02208A", "LAT02201A"], [680.2, 621.6, -224.9, "x", 8, "ENT02208A", "LAT02201A"], [680.2, 621.6, -60.0, "x", 8, "ENT02208A", "LAT02201A"], [1419.8, 621.6, -389.9, "x", 8, "ENT02208A", "LAT02202A"], [1419.8, 621.6, -224.9, "x", 8, "ENT02208A", "LAT02202A"], [1419.8, 621.6, -60.0, "x", 8, "ENT02208A", "LAT02202A"], [725.2, 621.6, -434.9, "z", 8, "ENT02208A", "FON02204A"], [1050.2, 621.6, -434.9, "z", 8, "ENT02208A", "FON02204A"], [1374.8, 621.6, -434.9, "z", 8, "ENT02208A", "FON02204A"]];
+const STEPS = [{"t": "Revisa tus piezas", "x": "Confirma que tienes las 22 piezas de MDF melamina Avella 15.15 (gabinete alacena y módulo bajo vitrina), 16 pernos de repisa y 93 clavacotes de madera de 8 × 30. Necesitas pegamento blanco, mazo de hule y prensas.", "hl": []}, {"t": "Gabinete alacena · interior", "x": "Arma las piezas interiores: BAS02107A (base), DIV02108A (interno). Une con clavacotes y pegamento las que se tocan entre sí; los costados entran en el siguiente paso.", "hl": ["BAS02107A", "DIV02108A"]}, {"t": "Gabinete alacena · interior", "x": "Arma las piezas interiores: FON02104A (pared), ARM02105A (cargador abajo), ARM02106A (cargador arriba). Une con clavacotes y pegamento las que se tocan entre sí; los costados entran en el siguiente paso.", "hl": ["FON02104A", "ARM02105A", "ARM02106A"]}, {"t": "Gabinete alacena · costados", "x": "Mete clavacotes con pegamento en los barrenos de canto de las piezas interiores y cierra con los costados LAT02101A y LAT02102A (cara barrenada hacia dentro). Prensa y revisa escuadra.", "hl": ["LAT02101A", "LAT02102A"]}, {"t": "Gabinete alacena · superficie", "x": "Mete clavacotes con pegamento en los cantos de arriba de laterales, pared, interno y cargador, y asienta la superficie TAP02103A encima (sobrepuesta).", "hl": ["TAP02103A"]}, {"t": "Gabinete alacena · repisas", "x": "Pon 4 pernos de Ø5 por repisa en los barrenos Ø3 (columnas a 50 del frente y de la pared) y coloca las repisas ENT02109A, ENT02110A, ENT02111A, ENT02112A.", "hl": ["ENT02109A", "ENT02110A", "ENT02111A", "ENT02112A"]}, {"t": "Gabinete alacena · puertas", "x": "Coloca las puertas embutidas PUE02113A y PUE02114A con 1 mm de luz. El STEP no trae bisagras: herraje por definir.", "hl": ["PUE02113A", "PUE02114A"]}, {"t": "Módulo bajo vitrina · interior", "x": "Arma las piezas interiores: ZOC02205A (zoclo), BAS02206A (base). Une con clavacotes y pegamento las que se tocan entre sí; los costados entran en el siguiente paso.", "hl": ["ZOC02205A", "BAS02206A"]}, {"t": "Módulo bajo vitrina · interior", "x": "Arma las piezas interiores: FON02204A (pared), ENT02207A (repisa 1), ENT02208A (repisa 2). Une con clavacotes y pegamento las que se tocan entre sí; los costados entran en el siguiente paso.", "hl": ["FON02204A", "ENT02207A", "ENT02208A"]}, {"t": "Módulo bajo vitrina · costados", "x": "Mete clavacotes con pegamento en los barrenos de canto de las piezas interiores y cierra con los costados LAT02201A y LAT02202A (cara barrenada hacia dentro). Prensa y revisa escuadra.", "hl": ["LAT02201A", "LAT02202A"]}, {"t": "Módulo bajo vitrina · superficie", "x": "Mete clavacotes con pegamento en los cantos de arriba de laterales, pared, interno y cargador, y asienta la superficie TAP02203A encima (sobrepuesta).", "hl": ["TAP02203A"]}];
+const NCLAV = 93, NBIS = 0;
+const PROY = "SANTATERESAAV";
+const EXEC_ANY = "https://script.google.com/macros/s/AKfycbwU8S0xRvafqPcW1UURPLtQM8dNLcuXqVSSnIQNq3xFNgz0Nz2H4H2lmZyHz-HAEIJ1/exec";
+const EXEC_JOHILL = "https://script.google.com/a/macros/johill.com.mx/s/AKfycbwU8S0xRvafqPcW1UURPLtQM8dNLcuXqVSSnIQNq3xFNgz0Nz2H4H2lmZyHz-HAEIJ1/exec";
+const CHK = {};
+const GRP = {"21": "Gabinete alacena · 1700", "22": "Módulo bajo vitrina · 770"};
+
+// ---------- Escena ----------
+const stage=document.getElementById('stage');
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+stage.prepend(renderer.domElement);
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(36,1,1,40000);
+cam.position.set(0,3200,11000);
+const ctl=new THREE.OrbitControls(cam,renderer.domElement);
+ctl.target.set(0,600,0);ctl.enableDamping=true;ctl.maxPolarAngle=Math.PI*0.49;ctl.minDistance=500;ctl.maxDistance=24000;
+scene.add(new THREE.HemisphereLight(0xfff6ea,0x8a7a66,0.78));
+const sun=new THREE.DirectionalLight(0xffffff,0.72);sun.position.set(1400,2600,1900);sun.castShadow=true;
+sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-6000,right:6000,top:6000,bottom:-6000,near:10,far:20000});scene.add(sun);
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(40000,40000),new THREE.MeshStandardMaterial({color:0xe9e2d6,roughness:1}));
+floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;scene.add(floor);
+
+// roble procedural (veta)
+function woodTex(vertical){
+  const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d');
+  g.fillStyle='#c9a77c';g.fillRect(0,0,256,256);
+  for(let i=0;i<70;i++){
+    const y=Math.random()*256, a=.05+Math.random()*.12;
+    g.strokeStyle=`rgba(${110+Math.random()*30|0},${75+Math.random()*20|0},${40+Math.random()*15|0},${a})`;
+    g.lineWidth=.6+Math.random()*2.2;g.beginPath();g.moveTo(0,y);
+    for(let x=0;x<=256;x+=32)g.lineTo(x,y+Math.sin(x/40+i)*2.2);g.stroke();
+  }
+  const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;
+  if(vertical){t.center.set(.5,.5);t.rotation=Math.PI/2;}
+  return t;
+}
+const texH=woodTex(false),texV=woodTex(true);
+const meshes={};
+P.forEach(p=>{
+  p.grp=Math.floor(p.id/100);
+  const geo=new THREE.BoxGeometry(...p.size);
+  const mat=new THREE.MeshStandardMaterial({map:p.vert?texV:texH,roughness:.65,transparent:true});
+  const m=new THREE.Mesh(geo,mat);m.castShadow=m.receiveShadow=true;
+  const ed=new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color:0x3b2f22,transparent:true,opacity:.5}));
+  m.add(ed);m.userData={p,ed};
+  const c=document.createElement('canvas');c.width=256;c.height=64;const g=c.getContext('2d');
+  g.fillStyle='rgba(34,32,28,.88)';g.beginPath();g.roundRect?g.roundRect(0,0,256,64,14):g.rect(0,0,256,64);g.fill();
+  g.fillStyle='#fff';g.font='bold 30px system-ui,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(p.code,128,33);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false}));
+  sp.scale.set(240,60,1);sp.position.set(0,p.size[1]/2+40,0);sp.renderOrder=10;sp.visible=false;m.add(sp);m.userData.sp=sp;
+  scene.add(m);meshes[p.code]=m;
+});
+const dowels=D.map(d=>{
+  const m=new THREE.Mesh(new THREE.CylinderGeometry(4,4,30,12),new THREE.MeshStandardMaterial({color:0xe8cfa0,roughness:.8,transparent:true}));
+  if(d[3]==='x')m.rotation.z=Math.PI/2;else if(d[3]==='z')m.rotation.x=Math.PI/2;
+  m.position.set(d[0],d[1],d[2]);m.userData={step:d[4],a:d[5],b:d[6]};scene.add(m);return m;
+});
+
+// ---------- Estado ----------
+let tab='armado',step=0,sel=null,playing=null,drawMode=false;
+const anim=[];
+function lerp(a,b,t){return a+(b-a)*t}
+function ease(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2}
+
+function layout(animate){
+  anim.length=0;
+  P.forEach(p=>{
+    const m=meshes[p.code];let target,vis=true,op=1;
+    if(tab==='piezas'){target=p.pos;op=sel&&sel!==p.code?0.12:1;}
+    else if(step===0){target=[p.pos[0]+p.from[0]*0.9,p.pos[1]+p.from[1]*0.6,p.pos[2]+p.from[2]*0.9];}
+    else{vis=p.step<=step;target=p.pos;}
+    m.visible=vis;
+    const hl=(tab==='armado'&&STEPS[step].hl.includes(p.code))||(tab==='piezas'&&sel===p.code);
+    m.material.opacity=op;m.material.depthWrite=op===1;m.userData.ed.material.opacity=op===1?.5:.12;
+    m.material.emissive=new THREE.Color(hl?0x015089:0x000000);m.material.emissiveIntensity=hl?.3:0;
+    m.userData.sp.visible=(tab==='piezas'&&sel===p.code);
+    if(drawMode){m.material.map=null;m.material.color.set(hl?0xcfe3f2:0xffffff);}
+    else{m.material.map=p.vert?texV:texH;m.material.color.set(0xffffff);}
+    m.material.needsUpdate=true;
+    if(animate&&tab==='armado'&&p.step===step&&step>0){
+      const s=[p.pos[0]+p.from[0],p.pos[1]+p.from[1],p.pos[2]+p.from[2]];m.position.set(...s);anim.push({m,s,t:target,t0:performance.now()});
+    }else m.position.set(...target);
+  });
+  dowels.forEach(d=>{
+    if(tab==='piezas'){d.visible=!sel||d.userData.a===sel||d.userData.b===sel;}
+    else d.visible=step>0&&d.userData.step<=step;
+    d.material.color.set(drawMode?0x999999:0xe8cfa0);
+  });
+  scene.background=new THREE.Color(drawMode?0xffffff:0xf2ece3);floor.visible=!drawMode;
+  document.querySelector('#prog i').style.width=(step/(STEPS.length-1)*100)+'%';
+}
+
+function lista(){
+  let h='',g=0;
+  P.forEach(x=>{if(x.grp!==g){g=x.grp;h+=`<div class="grp">${GRP[g]}</div>`;}
+    h+=`<div class="it ${x.code===sel?'on':''}" data-code="${x.code}"><span><b>${x.code}</b> · ${x.name}</span><span>${x.med}</span></div>`;});
+  return `<div class="list">${h}</div>`;
+}
+function renderSide(){
+  const s=document.getElementById('side');
+  if(tab==='armado'){
+    const st=STEPS[step];const nd=D.filter(d=>d[4]===step).length;
+    s.innerHTML=`<div class="kicker">Paso ${step} de ${STEPS.length-1}</div><h2>${st.t}</h2><p>${st.x}</p>
+      ${st.hl.map(c=>`<span class="tag" data-code="${c}">${c}</span>`).join('')}
+      ${nd?`<span class="tag hw">Clavacotes 8×30 · ${nd}</span>`:''}
+      ${step===0?lista()+`<div class="list"><div class="it"><span><b>Clavacote de madera</b> 8 × 30</span><span>× ${NCLAV}</span></div></div>`:''}`;
+  }else if(tab==='piezas'){
+    const p=P.find(x=>x.code===sel);
+    const ck=p&&CHK[p.code];
+    const ban=!ck?'':ck.st==='espera'?`<div class="chk w">Marcando pieza en la hoja de control…</div>`
+      :ck.st==='ok'?`<div class="chk ok"><b>✔ ${ck.r.detalle}</b><br>${ck.r.avance}</div>`
+      :ck.st==='no'?`<div class="chk no"><b>✘ ${ck.r.titulo}</b><br>${ck.r.detalle}</div>`
+      :`<div class="chk w">No se pudo marcar desde aquí.<br><a class="btn pri" style="display:inline-block;margin-top:8px;text-decoration:none" href="${EXEC_JOHILL}?m=${PROY}&p=${p.code}">Marcar con cuenta johill</a></div>`;
+    s.innerHTML=ban+(p?`<div class="kicker">Pieza · paso ${p.step} del armado</div><h2>${p.code} · ${p.name}</h2>
+      <table><tr><td>Descripción</td><td>${p.desc}</td></tr><tr><td>Medida final</td><td>${p.med} mm</td></tr>
+      <tr><td>Medida de corte</td><td>${p.corte} mm</td></tr>
+      <tr><td>Material</td><td>${p.mat} · veta al largo</td></tr>
+      <tr><td>Cantos</td><td>${p.cantos}</td></tr><tr><td>Barrenos</td><td>${p.barr}</td></tr>
+      <tr><td>Se une con</td><td>${p.une.length?p.une.map(c=>`<span class="tag" data-code="${c}">${c}</span>`).join(''):'Va suelta'}</td></tr></table>
+      <button class="btn" data-step="${p.step}">Ver su paso de armado</button>`:`<h2>Piezas del mueble</h2><p>Toca una pieza para ver su ficha. Cada QR de etiqueta abre aquí la pieza correspondiente.</p>`)+lista();
+  }
+}
+document.getElementById('side').addEventListener('click',e=>{
+  const c=e.target.closest('[data-code]');if(c){location.hash=c.dataset.code;return;}
+  const b=e.target.closest('[data-step]');if(b){step=+b.dataset.step;setTab('armado',true);}
+});
+
+function setTab(t,anim){
+  tab=t;document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+  const lab=t==='etiquetas';
+  document.getElementById('labels').style.display=lab?'block':'none';
+  document.getElementById('stage').style.display=lab?'none':'block';
+  document.getElementById('side').style.display=lab?'none':'block';
+  document.getElementById('hud').style.display=t==='armado'?'flex':'none';
+  if(lab)buildLabels();else{renderSide();layout(anim);resize();}
+}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{stopPlay();if(b.dataset.tab==='piezas'){sel=null;}location.hash=b.dataset.tab;});
+
+function go(n){step=Math.max(0,Math.min(STEPS.length-1,n));renderSide();layout(true);}
+function stopPlay(){if(playing){clearInterval(playing);playing=null;document.getElementById('bPlay').textContent='▶ Reproducir';}}
+document.getElementById('bPrev').onclick=()=>{stopPlay();go(step-1)};
+document.getElementById('bNext').onclick=()=>{stopPlay();go(step+1)};
+document.getElementById('bPlay').onclick=()=>{
+  if(playing){stopPlay();return;}
+  if(step===STEPS.length-1)go(0);
+  document.getElementById('bPlay').textContent='❚❚ Pausa';
+  playing=setInterval(()=>{if(step>=STEPS.length-1)stopPlay();else go(step+1);},2800);
+};
+document.getElementById('mSala').onclick=()=>{drawMode=false;layout(false)};
+document.getElementById('mDib').onclick=()=>{drawMode=true;layout(false)};
+addEventListener('keydown',e=>{if(tab!=='armado')return;if(e.key==='ArrowRight'){stopPlay();go(step+1)}if(e.key==='ArrowLeft'){stopPlay();go(step-1)}});
+
+function marcar(code){
+  if(CHK[code])return;
+  const E=window.__EARLY;if(E&&E.code===code){CHK[code]={st:E.st,r:E.r};if(E.st==='espera')window.__earlyDone=()=>{CHK[code]={st:E.st,r:E.r};if(tab==='piezas'&&sel===code)renderSide();};return;}
+  CHK[code]={st:'espera'};
+  const cb='__chk'+Date.now();let hecho=false;
+  const fin=(st,r)=>{if(hecho)return;hecho=true;CHK[code]={st,r};delete window[cb];if(tab==='piezas'&&sel===code)renderSide();};
+  window[cb]=r=>fin(r&&r.ok?'ok':'no',r||{});
+  const sc=document.createElement('script');
+  sc.src=EXEC_ANY+'?m='+encodeURIComponent(PROY)+'&p='+encodeURIComponent(code)+'&v='+encodeURIComponent(location.origin+location.pathname)+'&callback='+cb;
+  sc.onerror=()=>fin('err');setTimeout(()=>fin('err'),15000);
+  document.head.appendChild(sc);
+}
+function route(){
+  let h=decodeURIComponent(location.hash.slice(1));
+  if(/^c-/i.test(h)){h=h.slice(2);const q=P.find(x=>x.code.toLowerCase()===h.toLowerCase());
+    if(q){marcar(q.code);history.replaceState(null,'',location.pathname+location.search+'#'+q.code);}}
+  const p=P.find(x=>x.code.toLowerCase()===h.toLowerCase()||String(x.id)===h);
+  if(p){sel=p.code;setTab('piezas');frame(p);}
+  else if(h==='piezas'){setTab('piezas');}
+  else if(h==='etiquetas'){setTab('etiquetas');}
+  else setTab('armado',false);
+}
+function frame(p){const ps=P.filter(x=>x.grp===p.grp);const lo=[0,1,2].map(k=>Math.min(...ps.map(x=>x.pos[k]-x.size[k]/2))),hi=[0,1,2].map(k=>Math.max(...ps.map(x=>x.pos[k]+x.size[k]/2)));const c=[0,1,2].map(k=>(lo[k]+hi[k])/2),w=Math.max(hi[0]-lo[0],hi[1]-lo[1]);const asp=Math.max(0.45,Math.min(1.6,stage.clientWidth/Math.max(1,stage.clientHeight)));const d=Math.max(1400,w*2.1/asp);ctl.target.set(c[0],c[1],c[2]);cam.position.set(c[0]+d*0.32,c[1]+d*0.38,c[2]+d*0.9);ctl.update();}
+addEventListener('hashchange',route);
+
+function getBase(){
+  let v='';try{v=localStorage.getItem('santateresaav_base')||''}catch(e){}
+  if(!v)v=PUBLIC_URL.startsWith('http')?PUBLIC_URL:location.href.split('#')[0];
+  return v.split('#')[0];
+}
+function buildLabels(){
+  const inp=document.getElementById('baseUrl');if(!inp.value)inp.value=getBase();
+  const base=inp.value.trim().split('#')[0];
+  const qa=qrcode(0,'M');qa.addData(base+'#armado');qa.make();
+  const full=`<div class="lab" style="border-style:solid;border-color:#015089">${qa.createSvgTag({cellSize:3,margin:1,scalable:true})}<div><div class="c">ARMADO</div><div class="n">Alacena y vitrina</div><div class="m">Armado paso a paso · ${P.length} piezas</div></div></div>`;
+  document.getElementById('sheet').innerHTML=full+P.map(p=>{
+    const q=qrcode(0,'M');q.addData(base+'#'+p.code);q.make();
+    return `<div class="lab">${q.createSvgTag({cellSize:3,margin:1,scalable:true})}<div><div class="c">${p.code}</div><div class="n">${p.name}</div><div class="m">${p.med} mm · Santa Teresa</div></div></div>`;
+  }).join('');
+  document.getElementById('msg').textContent='Cada QR abre: '+base+'#CÓDIGO';
+}
+document.getElementById('bApply').onclick=()=>{try{localStorage.setItem('santateresaav_base',document.getElementById('baseUrl').value.trim())}catch(e){}buildLabels();};
+
+function resize(){const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();}
+addEventListener('resize',resize);
+(function loop(){
+  requestAnimationFrame(loop);
+  for(let i=anim.length-1;i>=0;i--){const a=anim[i];let t=Math.min(1,(performance.now()-a.t0)/900);const k=ease(t);
+    a.m.position.set(lerp(a.s[0],a.t[0],k),lerp(a.s[1],a.t[1],k),lerp(a.s[2],a.t[2],k));if(t>=1)anim.splice(i,1);}
+  ctl.update();renderer.render(scene,cam);
+})();
+resize();route();
+</script>
+</body>
+</html>

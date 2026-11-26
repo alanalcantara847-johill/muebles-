@@ -1,0 +1,249 @@
+{
+ "proyecto": "SANTATERESAAV",
+ "mueble": "SANTA TERESA - ALACENA Y VITRINA",
+ "visor": "https://alanalcantara847-johill.github.io/muebles-/santa-teresa-alacena-vitrina/",
+ "filas": [
+  [
+   "SANTATERESAAV",
+   "LAT02101A",
+   "Gabinete alacena - Lateral izquierdo",
+   "14-1",
+   "662.9 x 403",
+   "",
+   "",
+   0,
+   "https://alanalcantara847-johill.github.io/muebles-/santa-teresa-alacena-vitrina/"
+  ],
+  [
+   "SANTATERESAAV",
+   "LAT02102A",
+   "Gabinete alacena - Lateral derecho",
+   "14-2",
+   "662.9 x 403",
+   "",
+   "",
+   0,
+   "https://alanalcantara847-johill.github.io/muebles-/santa-teresa-alacena-vitrina/"
+  ],
+  [
+   "SANTATERESAAV",
+   "TAP02103A",
+   "Gabinete alacena - Superficie",
+   "14-3",
+   "1698 x 403",
+   "",
+   "",
+   0,
+   "https://alanalcantara847-johill.github.io/muebles-/santa-teresa-alacena-vitrina/"
+  ],
+  [
+   "SANTATERESAAV",
+   "FON02104A",
+   "Gabinete alacena - Pared",
+   "14-4",
+   "1667.7 x 662.9",
+   "",
+   "",
+   0,
+   "https://alanalcantara847-johill.github.io/muebles-/santa-teresa-alacena-vitrina/"
+  ],
+  [
+   "SANTATERESAAV",
+   "ARM02105A",
+   "Gabinete alacena - Cargador abajo",
+   "14-5",
+   "1667.7 x 98",
+   "",
+   "",
+   0,
+   "https://alanalcantara847-johill.github.io/muebles-/santa-teresa-alacena-vitrina/"
+  ],
+  [
+   "SANTATERESAAV",
+   "ARM02106A",
+   "Gabinete alacena - Cargador arriba",
+   "14-6",
+   "1667.7 x 98",
+   "",
+   "",
+   0,
+   "https://alanalcantara847-johill.github.io/muebles-/santa-teresa-alacena-vitrina/"
+  ],
+  [
+   "SANTATERESAAV",
+   "BAS02107A",
+   "Gabinete alacena - Base",
+   "14-7",
+   "1667.7 x 357.6",
+   "",
+   "",
+   0,
+   "https://alanalcantara847-johill.github.io/muebles-/santa-teresa-alacena-vitrina/"
+  ],
+  [
+   "SANTATERESAAV",
+   "DIV02108A",
+   "Gabinete alacena - Interno",
+   "14-8",
+   "632.7 x 357.6",
+   "",
+   "",
+   0,
+   "https://alanalcantara847-johill.github.io/muebles-/santa-teresa-alacena-vitrina/"
+  ],
+  [
+   "SANTATERESAAV",
+   "ENT02109A",
+   "Gabinete alacena - Repisa izq 1",
+   "14-9",
+   "823.8 x 342.6",
+   "",
+   "",
+   0,
+   "https://alanalcantara847-johill.github.io/muebles-/santa-teresa-alacena-vitrina/"
+  ],
+  [
+   "SANTATERESAAV",
+   "ENT02110A",
+   "Gabinete alacena - Repisa izq 2",
+   "14-10",
+   "823.8 x 342.6",
+   "",
+   "",
+   0,
+   "https://alanalcantara847-johill.github.io/muebles-/santa-teresa-alacena-vitrina/"
+  ],
+  [
+   "SANTATERESAAV",
+   "ENT02111A",
+   "Gabinete alacena - Repisa der 1",
+   "14-11",
+   "823.8 x 342.6",
+   "",
+   "",
+   0,
+   "https://alanalcantara847-johill.github.io/muebles-/santa-teresa-alacena-vitrina/"
+  ],
+  [
+   "SANTATERESAAV",
+   "ENT02112A",
+   "Gabinete alacena - Repisa der 2",
+   "14-12",
+   "823.8 x 342.6",
+   "",
+   "",
+   0,
+   "https://alanalcantara847-johill.github.io/muebles-/santa-teresa-alacena-vitrina/"
+  ],
+  [
+   "SANTATERESAAV",
+   "PUE02113A",
+   "Gabinete alacena - Puerta izquierda",
+   "14-13",
+   "662.9 x 830.9",
+   "",
+   "",
+   0,
+   "https://alanalcantara847-johill.github.io/muebles-/santa-teresa-alacena-vitrina/"
+  ],
+  [
+   "SANTATERESAAV",
+   "PUE02114A",
+   "Gabinete alacena - Puerta derecha",
+   "14-14",
+   "662.9 x 830.9",
+   "",
+   "",
+   0,
+   "https://alanalcantara847-johill.github.io/muebles-/santa-teresa-alacena-vitrina/"
+  ],
+  [
+   "SANTATERESAAV",
+   "LAT02201A",
+   "Módulo bajo vitrina - Lateral izquierdo",
+   "8-1",
+   "782.9 x 448",
+   "",
+   "",
+   0,
+   "https://alanalcantara847-johill.github.io/muebles-/santa-teresa-alacena-vitrina/"
+  ],
+  [
+   "SANTATERESAAV",
+   "LAT02202A",
+   "Módulo bajo vitrina - Lateral derecho",
+   "8-2",
+   "782.9 x 448",
+   "",
+   "",
+   0,
+   "https://alanalcantara847-johill.github.io/muebles-/santa-teresa-alacena-vitrina/"
+  ],
+  [
+   "SANTATERESAAV",
+   "TAP02203A",
+   "Módulo bajo vitrina - Superficie",
+   "8-3",
+   "768 x 448",
+   "",
+   "",
+   0,
+   "https://alanalcantara847-johill.github.io/muebles-/santa-teresa-alacena-vitrina/"
+  ],
+  [
+   "SANTATERESAAV",
+   "FON02204A",
+   "Módulo bajo vitrina - Pared",
+   "8-4",
+   "737.7 x 782.9",
+   "",
+   "",
+   0,
+   "https://alanalcantara847-johill.github.io/muebles-/santa-teresa-alacena-vitrina/"
+  ],
+  [
+   "SANTATERESAAV",
+   "ZOC02205A",
+   "Módulo bajo vitrina - Zoclo",
+   "8-5",
+   "737.7 x 112",
+   "",
+   "",
+   0,
+   "https://alanalcantara847-johill.github.io/muebles-/santa-teresa-alacena-vitrina/"
+  ],
+  [
+   "SANTATERESAAV",
+   "BAS02206A",
+   "Módulo bajo vitrina - Base",
+   "8-6",
+   "737.7 x 432.9",
+   "",
+   "",
+   0,
+   "https://alanalcantara847-johill.github.io/muebles-/santa-teresa-alacena-vitrina/"
+  ],
+  [
+   "SANTATERESAAV",
+   "ENT02207A",
+   "Módulo bajo vitrina - Repisa 1",
+   "8-7",
+   "737.7 x 417.9",
+   "",
+   "",
+   0,
+   "https://alanalcantara847-johill.github.io/muebles-/santa-teresa-alacena-vitrina/"
+  ],
+  [
+   "SANTATERESAAV",
+   "ENT02208A",
+   "Módulo bajo vitrina - Repisa 2",
+   "8-8",
+   "737.7 x 417.9",
+   "",
+   "",
+   0,
+   "https://alanalcantara847-johill.github.io/muebles-/santa-teresa-alacena-vitrina/"
+  ]
+ ]
+}
