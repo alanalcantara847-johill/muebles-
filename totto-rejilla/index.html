@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TOTTO · Rejilla · Armado 3D y piezas</title>
+<style>
+:root{--bg:#f6f3ee;--ink:#22201c;--mut:#6d665c;--acc:#015089;--card:#fff;--line:#e3ddd3}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg)}
+#app{display:flex;flex-direction:column;height:100%}
+header{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--card);flex-wrap:wrap}
+header h1{font-size:16px;margin:0;font-weight:650}
+header .sub{font-size:12px;color:var(--mut)}
+nav{margin-left:auto;display:flex;gap:4px}
+nav button,.btn{border:1px solid var(--line);background:var(--card);padding:7px 12px;border-radius:8px;font:inherit;font-size:13px;cursor:pointer;color:var(--ink)}
+nav button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+main{flex:1;display:flex;min-height:0}
+#side{width:370px;max-width:100%;overflow:auto;padding:14px;border-right:1px solid var(--line);background:var(--card)}
+#stage{flex:1;position:relative;min-height:300px}
+#stage canvas{display:block;width:100%;height:100%}
+#hud{position:absolute;left:12px;right:12px;bottom:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#prog{flex:1;min-width:120px;height:6px;background:#0001;border-radius:4px;overflow:hidden}
+#prog i{display:block;height:100%;background:var(--acc);width:0;transition:width .3s}
+#modes{position:absolute;top:12px;right:12px;display:flex;gap:4px}
+.kicker{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--acc);font-weight:700}
+h2{font-size:19px;margin:4px 0 8px}
+p{line-height:1.45;font-size:14px;margin:6px 0}
+.tag{display:inline-block;background:#f1ebe2;border-radius:6px;padding:2px 7px;font-size:12px;font-weight:600;margin:2px 3px 2px 0;cursor:pointer}
+.tag.hw{background:#e6eef5}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+td{padding:5px 2px;border-bottom:1px solid var(--line);vertical-align:top}
+td:first-child{color:var(--mut);width:38%}
+.list .it{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;margin:5px 0;cursor:pointer;font-size:13px}
+.list .it:hover,.list .it.on{border-color:var(--acc);background:#f0f6fb}
+.list .it b{font-size:13px}
+.grp{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:12px 0 2px;font-weight:700}
+#labels{display:none;flex:1;overflow:auto;padding:16px;background:#fff}
+.sheet{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.lab{border:1px dashed #bbb;border-radius:6px;padding:10px;display:flex;gap:10px;align-items:center}
+.lab svg{width:96px;height:96px;flex:none}
+.lab .c{font-weight:800;font-size:15px}
+.lab .n{font-size:12px}
+.lab .m{font-size:11px;color:var(--mut)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.row input{flex:1;min-width:240px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:13px}
+#msg{font-size:12px;color:var(--mut)}
+.chk{border-radius:10px;padding:12px 14px;margin:0 0 12px;font-size:14px;line-height:1.45}
+.chk.ok{background:#d6f0dc;color:#1e7e34;border:1px solid #9fd7ad}
+.chk.no{background:#fbe1de;color:#a93226;border:1px solid #f0aaa2}
+.chk.w{background:#fff4e5;color:#7a4b00;border:1px solid #f5c98b}
+@media (max-width:760px){
+  main{flex-direction:column-reverse}
+  #side{width:100%;max-height:46%;border-right:0;border-top:1px solid var(--line)}
+  nav{margin-left:0;width:100%}
+  nav button{flex:1}
+}
+</style>
+<link rel="preconnect" href="https://script.google.com">
+<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<script>(function(){var h=decodeURIComponent(location.hash.slice(1));if(!/^c-/i.test(h))return;var c=h.slice(2).toUpperCase();var E=window.__EARLY={code:c,st:'espera',r:{}};var fin=function(st,r){if(E.st!=='espera')return;E.st=st;E.r=r||{};if(window.__earlyDone)window.__earlyDone();};window.__earlyCb=function(r){fin(r&&r.ok?'ok':'no',r)};var s=document.createElement('script');s.src='https://script.google.com/macros/s/AKfycbwU8S0xRvafqPcW1UURPLtQM8dNLcuXqVSSnIQNq3xFNgz0Nz2H4H2lmZyHz-HAEIJ1/exec?m=TOTTOREJ&p='+encodeURIComponent(c)+'&v='+encodeURIComponent(location.origin+location.pathname)+'&callback=__earlyCb';s.onerror=function(){fin('err')};setTimeout(function(){fin('err')},15000);document.head.appendChild(s);})();</script>
+</head>
+<body>
+<div id="app">
+<header>
+  <div><h1>TOTTO · Rejilla</h1><div class="sub">MDF Oxford 15.15 mm · 22 piezas · 387 × 780 × 190 · Johill</div></div>
+  <nav>
+    <button data-tab="armado" class="on">Armado</button>
+    <button data-tab="piezas">Piezas</button>
+    <button data-tab="etiquetas">Etiquetas QR</button>
+  </nav>
+</header>
+<main id="main">
+  <aside id="side"></aside>
+  <section id="stage">
+    <div id="modes"><button class="btn" id="mSala">Sala</button><button class="btn" id="mDib">Dibujo</button></div>
+    <div id="hud">
+      <button class="btn" id="bPrev">◀ Anterior</button>
+      <button class="btn pri" id="bPlay">▶ Reproducir</button>
+      <button class="btn" id="bNext">Siguiente ▶</button>
+      <div id="prog"><i></i></div>
+    </div>
+  </section>
+  <section id="labels">
+    <div class="row">
+      <input id="baseUrl" placeholder="Dirección pública de esta página">
+      <button class="btn" id="bApply">Actualizar QR</button>
+    </div>
+    <div id="msg"></div>
+    <div class="sheet" id="sheet"></div>
+  </section>
+</main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+// ---------- Datos (TOTTO · Rejilla) ----------
+const PUBLIC_URL = "https://alanalcantara847-johill.github.io/muebles-/totto-rejilla/";
+const P = [{"code": "TAP03101A", "id": 3101, "name": "Techo", "desc": "Techo completo sobre laterales · Rejilla", "med": "387 × 190 × 15.15", "size": [387.0, 15.15, 190.0], "pos": [0.0, 772.42, -95.0], "from": [0, 320, 0], "step": 4, "vert": false, "corte": "385 × 188", "mat": "MDF Oxford 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 387+387 190+190", "barr": "15 barrenos de cara Ø8 × 12", "maq": "—", "une": ["DIV03106A", "DIV03107A", "FON03105A", "LAT03103A", "LAT03104A"]}, {"code": "BAS03102A", "id": 3102, "name": "Piso", "desc": "Piso completo bajo laterales · Rejilla", "med": "387 × 190 × 15.15", "size": [387.0, 15.15, 190.0], "pos": [0.0, 7.58, -95.0], "from": [0, 0, 380], "step": 1, "vert": false, "corte": "385 × 188", "mat": "MDF Oxford 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 387+387 190+190", "barr": "15 barrenos de cara Ø8 × 12", "maq": "—", "une": ["DIV03106A", "DIV03107A", "FON03105A", "LAT03103A", "LAT03104A"]}, {"code": "LAT03103A", "id": 3103, "name": "Lateral izquierdo", "desc": "Lateral entre piso y techo · Rejilla", "med": "749.7 × 190 × 15.15", "size": [15.15, 749.7, 190.0], "pos": [-185.93, 390.0, -95.0], "from": [-320, 0, 0], "step": 3, "vert": true, "corte": "747.7 × 188", "mat": "MDF Oxford 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 749.7+749.7 190+190", "barr": "6 barrenos de canto Ø8 × 22 (Z = T/2) · 21 barrenos de cara Ø8 × 12", "maq": "—", "une": ["BAS03102A", "ENT03108A", "ENT03109A", "ENT03110A", "ENT03111A", "ENT03112A", "FON03105A", "TAP03101A"]}, {"code": "LAT03104A", "id": 3104, "name": "Lateral derecho", "desc": "Lateral entre piso y techo · Rejilla", "med": "749.7 × 190 × 15.15", "size": [15.15, 749.7, 190.0], "pos": [185.93, 390.0, -95.0], "from": [320, 0, 0], "step": 3, "vert": true, "corte": "747.7 × 188", "mat": "MDF Oxford 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 749.7+749.7 190+190", "barr": "6 barrenos de canto Ø8 × 22 (Z = T/2) · 21 barrenos de cara Ø8 × 12", "maq": "—", "une": ["BAS03102A", "ENT03118A", "ENT03119A", "ENT03120A", "ENT03121A", "ENT03122A", "FON03105A", "TAP03101A"]}, {"code": "FON03105A", "id": 3105, "name": "Fondo", "desc": "Fondo entre laterales, al ras de atrás · Rejilla", "med": "356.7 × 749.7 × 15.15", "size": [356.7, 749.7, 15.15], "pos": [0.0, 390.0, -182.43], "from": [0, 0, -420], "step": 1, "vert": false, "corte": "354.7 × 747.7", "mat": "MDF Oxford 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 356.7+356.7 749.7+749.7", "barr": "18 barrenos de canto Ø8 × 22 (Z = T/2) · 42 barrenos de cara Ø8 × 12", "maq": "—", "une": ["BAS03102A", "DIV03106A", "DIV03107A", "ENT03108A", "ENT03109A", "ENT03110A", "ENT03111A", "ENT03112A", "ENT03113A", "ENT03114A", "ENT03115A", "ENT03116A", "ENT03117A", "ENT03118A", "ENT03119A", "ENT03120A", "ENT03121A", "ENT03122A", "LAT03103A", "LAT03104A", "TAP03101A"]}, {"code": "DIV03106A", "id": 3106, "name": "Separación vertical 1", "desc": "Separación vertical entre piso y techo, al frente del fondo · Rejilla", "med": "749.7 × 174.85 × 15.15", "size": [15.15, 749.7, 174.85], "pos": [-61.97, 390.0, -87.42], "from": [0, 250, 0], "step": 1, "vert": true, "corte": "747.7 × 172.9", "mat": "MDF Oxford 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 749.7+749.7 174.85+174.85", "barr": "12 barrenos de canto Ø8 × 22 (Z = T/2) · 30 barrenos de cara Ø8 × 12", "maq": "—", "une": ["BAS03102A", "ENT03108A", "ENT03109A", "ENT03110A", "ENT03111A", "ENT03112A", "ENT03113A", "ENT03114A", "ENT03115A", "ENT03116A", "ENT03117A", "FON03105A", "TAP03101A"]}, {"code": "DIV03107A", "id": 3107, "name": "Separación vertical 2", "desc": "Separación vertical entre piso y techo, al frente del fondo · Rejilla", "med": "749.7 × 174.85 × 15.15", "size": [15.15, 749.7, 174.85], "pos": [61.98, 390.0, -87.42], "from": [0, 250, 0], "step": 1, "vert": true, "corte": "747.7 × 172.9", "mat": "MDF Oxford 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 749.7+749.7 174.85+174.85", "barr": "12 barrenos de canto Ø8 × 22 (Z = T/2) · 30 barrenos de cara Ø8 × 12", "maq": "—", "une": ["BAS03102A", "ENT03113A", "ENT03114A", "ENT03115A", "ENT03116A", "ENT03117A", "ENT03118A", "ENT03119A", "ENT03120A", "ENT03121A", "ENT03122A", "FON03105A", "TAP03101A"]}, {"code": "ENT03108A", "id": 3108, "name": "Horizontal C1-1", "desc": "Separación horizontal columna 1, nivel 1 · Rejilla", "med": "108.8 × 174.85 × 15.15", "size": [108.8, 15.15, 174.85], "pos": [-123.95, 135.05, -87.42], "from": [0, 0, 400], "step": 2, "vert": false, "corte": "106.8 × 172.9", "mat": "MDF Oxford 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 108.8+108.8 174.85+174.85", "barr": "8 barrenos de canto Ø8 × 22 (Z = T/2)", "maq": "—", "une": ["DIV03106A", "FON03105A", "LAT03103A"]}, {"code": "ENT03109A", "id": 3109, "name": "Horizontal C1-2", "desc": "Separación horizontal columna 1, nivel 2 · Rejilla", "med": "108.8 × 174.85 × 15.15", "size": [108.8, 15.15, 174.85], "pos": [-123.95, 262.52, -87.42], "from": [0, 0, 400], "step": 2, "vert": false, "corte": "106.8 × 172.9", "mat": "MDF Oxford 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 108.8+108.8 174.85+174.85", "barr": "8 barrenos de canto Ø8 × 22 (Z = T/2)", "maq": "—", "une": ["DIV03106A", "FON03105A", "LAT03103A"]}, {"code": "ENT03110A", "id": 3110, "name": "Horizontal C1-3", "desc": "Separación horizontal columna 1, nivel 3 · Rejilla", "med": "108.8 × 174.85 × 15.15", "size": [108.8, 15.15, 174.85], "pos": [-123.95, 390.0, -87.42], "from": [0, 0, 400], "step": 2, "vert": false, "corte": "106.8 × 172.9", "mat": "MDF Oxford 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 108.8+108.8 174.85+174.85", "barr": "8 barrenos de canto Ø8 × 22 (Z = T/2)", "maq": "—", "une": ["DIV03106A", "FON03105A", "LAT03103A"]}, {"code": "ENT03111A", "id": 3111, "name": "Horizontal C1-4", "desc": "Separación horizontal columna 1, nivel 4 · Rejilla", "med": "108.8 × 174.85 × 15.15", "size": [108.8, 15.15, 174.85], "pos": [-123.95, 517.47, -87.42], "from": [0, 0, 400], "step": 2, "vert": false, "corte": "106.8 × 172.9", "mat": "MDF Oxford 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 108.8+108.8 174.85+174.85", "barr": "8 barrenos de canto Ø8 × 22 (Z = T/2)", "maq": "—", "une": ["DIV03106A", "FON03105A", "LAT03103A"]}, {"code": "ENT03112A", "id": 3112, "name": "Horizontal C1-5", "desc": "Separación horizontal columna 1, nivel 5 · Rejilla", "med": "108.8 × 174.85 × 15.15", "size": [108.8, 15.15, 174.85], "pos": [-123.95, 644.95, -87.42], "from": [0, 0, 400], "step": 2, "vert": false, "corte": "106.8 × 172.9", "mat": "MDF Oxford 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 108.8+108.8 174.85+174.85", "barr": "8 barrenos de canto Ø8 × 22 (Z = T/2)", "maq": "—", "une": ["DIV03106A", "FON03105A", "LAT03103A"]}, {"code": "ENT03113A", "id": 3113, "name": "Horizontal C2-1", "desc": "Separación horizontal columna 2, nivel 1 · Rejilla", "med": "108.8 × 174.85 × 15.15", "size": [108.8, 15.15, 174.85], "pos": [0.0, 135.05, -87.42], "from": [0, 0, 400], "step": 2, "vert": false, "corte": "106.8 × 172.9", "mat": "MDF Oxford 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 108.8+108.8 174.85+174.85", "barr": "8 barrenos de canto Ø8 × 22 (Z = T/2)", "maq": "—", "une": ["DIV03106A", "DIV03107A", "FON03105A"]}, {"code": "ENT03114A", "id": 3114, "name": "Horizontal C2-2", "desc": "Separación horizontal columna 2, nivel 2 · Rejilla", "med": "108.8 × 174.85 × 15.15", "size": [108.8, 15.15, 174.85], "pos": [0.0, 262.52, -87.42], "from": [0, 0, 400], "step": 2, "vert": false, "corte": "106.8 × 172.9", "mat": "MDF Oxford 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 108.8+108.8 174.85+174.85", "barr": "8 barrenos de canto Ø8 × 22 (Z = T/2)", "maq": "—", "une": ["DIV03106A", "DIV03107A", "FON03105A"]}, {"code": "ENT03115A", "id": 3115, "name": "Horizontal C2-3", "desc": "Separación horizontal columna 2, nivel 3 · Rejilla", "med": "108.8 × 174.85 × 15.15", "size": [108.8, 15.15, 174.85], "pos": [0.0, 390.0, -87.42], "from": [0, 0, 400], "step": 2, "vert": false, "corte": "106.8 × 172.9", "mat": "MDF Oxford 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 108.8+108.8 174.85+174.85", "barr": "8 barrenos de canto Ø8 × 22 (Z = T/2)", "maq": "—", "une": ["DIV03106A", "DIV03107A", "FON03105A"]}, {"code": "ENT03116A", "id": 3116, "name": "Horizontal C2-4", "desc": "Separación horizontal columna 2, nivel 4 · Rejilla", "med": "108.8 × 174.85 × 15.15", "size": [108.8, 15.15, 174.85], "pos": [0.0, 517.47, -87.42], "from": [0, 0, 400], "step": 2, "vert": false, "corte": "106.8 × 172.9", "mat": "MDF Oxford 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 108.8+108.8 174.85+174.85", "barr": "8 barrenos de canto Ø8 × 22 (Z = T/2)", "maq": "—", "une": ["DIV03106A", "DIV03107A", "FON03105A"]}, {"code": "ENT03117A", "id": 3117, "name": "Horizontal C2-5", "desc": "Separación horizontal columna 2, nivel 5 · Rejilla", "med": "108.8 × 174.85 × 15.15", "size": [108.8, 15.15, 174.85], "pos": [0.0, 644.95, -87.42], "from": [0, 0, 400], "step": 2, "vert": false, "corte": "106.8 × 172.9", "mat": "MDF Oxford 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 108.8+108.8 174.85+174.85", "barr": "8 barrenos de canto Ø8 × 22 (Z = T/2)", "maq": "—", "une": ["DIV03106A", "DIV03107A", "FON03105A"]}, {"code": "ENT03118A", "id": 3118, "name": "Horizontal C3-1", "desc": "Separación horizontal columna 3, nivel 1 · Rejilla", "med": "108.8 × 174.85 × 15.15", "size": [108.8, 15.15, 174.85], "pos": [123.95, 135.05, -87.42], "from": [0, 0, 400], "step": 2, "vert": false, "corte": "106.8 × 172.9", "mat": "MDF Oxford 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 108.8+108.8 174.85+174.85", "barr": "8 barrenos de canto Ø8 × 22 (Z = T/2)", "maq": "—", "une": ["DIV03107A", "FON03105A", "LAT03104A"]}, {"code": "ENT03119A", "id": 3119, "name": "Horizontal C3-2", "desc": "Separación horizontal columna 3, nivel 2 · Rejilla", "med": "108.8 × 174.85 × 15.15", "size": [108.8, 15.15, 174.85], "pos": [123.95, 262.52, -87.42], "from": [0, 0, 400], "step": 2, "vert": false, "corte": "106.8 × 172.9", "mat": "MDF Oxford 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 108.8+108.8 174.85+174.85", "barr": "8 barrenos de canto Ø8 × 22 (Z = T/2)", "maq": "—", "une": ["DIV03107A", "FON03105A", "LAT03104A"]}, {"code": "ENT03120A", "id": 3120, "name": "Horizontal C3-3", "desc": "Separación horizontal columna 3, nivel 3 · Rejilla", "med": "108.8 × 174.85 × 15.15", "size": [108.8, 15.15, 174.85], "pos": [123.95, 390.0, -87.42], "from": [0, 0, 400], "step": 2, "vert": false, "corte": "106.8 × 172.9", "mat": "MDF Oxford 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 108.8+108.8 174.85+174.85", "barr": "8 barrenos de canto Ø8 × 22 (Z = T/2)", "maq": "—", "une": ["DIV03107A", "FON03105A", "LAT03104A"]}, {"code": "ENT03121A", "id": 3121, "name": "Horizontal C3-4", "desc": "Separación horizontal columna 3, nivel 4 · Rejilla", "med": "108.8 × 174.85 × 15.15", "size": [108.8, 15.15, 174.85], "pos": [123.95, 517.47, -87.42], "from": [0, 0, 400], "step": 2, "vert": false, "corte": "106.8 × 172.9", "mat": "MDF Oxford 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 108.8+108.8 174.85+174.85", "barr": "8 barrenos de canto Ø8 × 22 (Z = T/2)", "maq": "—", "une": ["DIV03107A", "FON03105A", "LAT03104A"]}, {"code": "ENT03122A", "id": 3122, "name": "Horizontal C3-5", "desc": "Separación horizontal columna 3, nivel 5 · Rejilla", "med": "108.8 × 174.85 × 15.15", "size": [108.8, 15.15, 174.85], "pos": [123.95, 644.95, -87.42], "from": [0, 0, 400], "step": 2, "vert": false, "corte": "106.8 × 172.9", "mat": "MDF Oxford 15.15 mm", "cantos": "4 cantos cubrecanto PVC 1 mm: 108.8+108.8 174.85+174.85", "barr": "8 barrenos de canto Ø8 × 22 (Z = T/2)", "maq": "—", "une": ["DIV03107A", "FON03105A", "LAT03104A"]}];
+// Clavacotes 8×30: [x,y,z,eje,paso,entra,recibe]
+const D = [[-185.9, 764.9, -140.0, "y", 3, "LAT03103A", "TAP03101A"], [-185.9, 764.9, -95.0, "y", 3, "LAT03103A", "TAP03101A"], [-185.9, 764.9, -50.0, "y", 3, "LAT03103A", "TAP03101A"], [-185.9, 15.2, -140.0, "y", 3, "LAT03103A", "BAS03102A"], [-185.9, 15.2, -95.0, "y", 3, "LAT03103A", "BAS03102A"], [-185.9, 15.2, -50.0, "y", 3, "LAT03103A", "BAS03102A"], [185.9, 764.9, -140.0, "y", 3, "LAT03104A", "TAP03101A"], [185.9, 764.9, -95.0, "y", 3, "LAT03104A", "TAP03101A"], [185.9, 764.9, -50.0, "y", 3, "LAT03104A", "TAP03101A"], [185.9, 15.2, -140.0, "y", 3, "LAT03104A", "BAS03102A"], [185.9, 15.2, -95.0, "y", 3, "LAT03104A", "BAS03102A"], [185.9, 15.2, -50.0, "y", 3, "LAT03104A", "BAS03102A"], [-128.3, 764.9, -182.4, "y", 1, "FON03105A", "TAP03101A"], [0.0, 764.9, -182.4, "y", 1, "FON03105A", "TAP03101A"], [128.4, 764.9, -182.4, "y", 1, "FON03105A", "TAP03101A"], [-128.3, 15.2, -182.4, "y", 1, "FON03105A", "BAS03102A"], [0.0, 15.2, -182.4, "y", 1, "FON03105A", "BAS03102A"], [128.4, 15.2, -182.4, "y", 1, "FON03105A", "BAS03102A"], [-178.3, 65.2, -182.4, "x", 1, "FON03105A", "LAT03103A"], [-178.3, 195.2, -182.4, "x", 1, "FON03105A", "LAT03103A"], [-178.3, 325.1, -182.4, "x", 1, "FON03105A", "LAT03103A"], [-178.3, 455.1, -182.4, "x", 1, "FON03105A", "LAT03103A"], [-178.3, 585.1, -182.4, "x", 1, "FON03105A", "LAT03103A"], [-178.3, 714.9, -182.4, "x", 1, "FON03105A", "LAT03103A"], [178.4, 65.2, -182.4, "x", 1, "FON03105A", "LAT03104A"], [178.4, 195.2, -182.4, "x", 1, "FON03105A", "LAT03104A"], [178.4, 325.1, -182.4, "x", 1, "FON03105A", "LAT03104A"], [178.4, 455.1, -182.4, "x", 1, "FON03105A", "LAT03104A"], [178.4, 585.1, -182.4, "x", 1, "FON03105A", "LAT03104A"], [178.4, 714.9, -182.4, "x", 1, "FON03105A", "LAT03104A"], [-62.0, 764.9, -124.8, "y", 1, "DIV03106A", "TAP03101A"], [-62.0, 764.9, -87.4, "y", 1, "DIV03106A", "TAP03101A"], [-62.0, 764.9, -50.0, "y", 1, "DIV03106A", "TAP03101A"], [-62.0, 15.2, -124.8, "y", 1, "DIV03106A", "BAS03102A"], [-62.0, 15.2, -87.4, "y", 1, "DIV03106A", "BAS03102A"], [-62.0, 15.2, -50.0, "y", 1, "DIV03106A", "BAS03102A"], [-62.0, 65.2, -174.8, "z", 1, "DIV03106A", "FON03105A"], [-62.0, 195.2, -174.8, "z", 1, "DIV03106A", "FON03105A"], [-62.0, 325.1, -174.8, "z", 1, "DIV03106A", "FON03105A"], [-62.0, 455.1, -174.8, "z", 1, "DIV03106A", "FON03105A"], [-62.0, 585.1, -174.8, "z", 1, "DIV03106A", "FON03105A"], [-62.0, 714.9, -174.8, "z", 1, "DIV03106A", "FON03105A"], [62.0, 764.9, -124.8, "y", 1, "DIV03107A", "TAP03101A"], [62.0, 764.9, -87.4, "y", 1, "DIV03107A", "TAP03101A"], [62.0, 764.9, -50.0, "y", 1, "DIV03107A", "TAP03101A"], [62.0, 15.2, -124.8, "y", 1, "DIV03107A", "BAS03102A"], [62.0, 15.2, -87.4, "y", 1, "DIV03107A", "BAS03102A"], [62.0, 15.2, -50.0, "y", 1, "DIV03107A", "BAS03102A"], [62.0, 65.2, -174.8, "z", 1, "DIV03107A", "FON03105A"], [62.0, 195.2, -174.8, "z", 1, "DIV03107A", "FON03105A"], [62.0, 325.1, -174.8, "z", 1, "DIV03107A", "FON03105A"], [62.0, 455.1, -174.8, "z", 1, "DIV03107A", "FON03105A"], [62.0, 585.1, -174.8, "z", 1, "DIV03107A", "FON03105A"], [62.0, 714.9, -174.8, "z", 1, "DIV03107A", "FON03105A"], [-178.3, 135.0, -124.8, "x", 2, "ENT03108A", "LAT03103A"], [-178.3, 135.0, -87.4, "x", 2, "ENT03108A", "LAT03103A"], [-178.3, 135.0, -50.0, "x", 2, "ENT03108A", "LAT03103A"], [-151.2, 135.0, -174.8, "z", 2, "ENT03108A", "FON03105A"], [-96.8, 135.0, -174.8, "z", 2, "ENT03108A", "FON03105A"], [-69.5, 135.0, -104.8, "x", 2, "ENT03108A", "DIV03106A"], [-69.5, 135.0, -67.4, "x", 2, "ENT03108A", "DIV03106A"], [-69.5, 135.0, -30.0, "x", 2, "ENT03108A", "DIV03106A"], [-178.3, 262.5, -124.8, "x", 2, "ENT03109A", "LAT03103A"], [-178.3, 262.5, -87.4, "x", 2, "ENT03109A", "LAT03103A"], [-178.3, 262.5, -50.0, "x", 2, "ENT03109A", "LAT03103A"], [-151.2, 262.5, -174.8, "z", 2, "ENT03109A", "FON03105A"], [-96.8, 262.5, -174.8, "z", 2, "ENT03109A", "FON03105A"], [-69.5, 262.5, -104.8, "x", 2, "ENT03109A", "DIV03106A"], [-69.5, 262.5, -67.4, "x", 2, "ENT03109A", "DIV03106A"], [-69.5, 262.5, -30.0, "x", 2, "ENT03109A", "DIV03106A"], [-178.3, 390.0, -124.8, "x", 2, "ENT03110A", "LAT03103A"], [-178.3, 390.0, -87.4, "x", 2, "ENT03110A", "LAT03103A"], [-178.3, 390.0, -50.0, "x", 2, "ENT03110A", "LAT03103A"], [-151.2, 390.0, -174.8, "z", 2, "ENT03110A", "FON03105A"], [-96.8, 390.0, -174.8, "z", 2, "ENT03110A", "FON03105A"], [-69.5, 390.0, -104.8, "x", 2, "ENT03110A", "DIV03106A"], [-69.5, 390.0, -67.4, "x", 2, "ENT03110A", "DIV03106A"], [-69.5, 390.0, -30.0, "x", 2, "ENT03110A", "DIV03106A"], [-178.3, 517.5, -124.8, "x", 2, "ENT03111A", "LAT03103A"], [-178.3, 517.5, -87.4, "x", 2, "ENT03111A", "LAT03103A"], [-178.3, 517.5, -50.0, "x", 2, "ENT03111A", "LAT03103A"], [-151.2, 517.5, -174.8, "z", 2, "ENT03111A", "FON03105A"], [-96.8, 517.5, -174.8, "z", 2, "ENT03111A", "FON03105A"], [-69.5, 517.5, -104.8, "x", 2, "ENT03111A", "DIV03106A"], [-69.5, 517.5, -67.4, "x", 2, "ENT03111A", "DIV03106A"], [-69.5, 517.5, -30.0, "x", 2, "ENT03111A", "DIV03106A"], [-178.3, 645.0, -124.8, "x", 2, "ENT03112A", "LAT03103A"], [-178.3, 645.0, -87.4, "x", 2, "ENT03112A", "LAT03103A"], [-178.3, 645.0, -50.0, "x", 2, "ENT03112A", "LAT03103A"], [-151.2, 645.0, -174.8, "z", 2, "ENT03112A", "FON03105A"], [-96.8, 645.0, -174.8, "z", 2, "ENT03112A", "FON03105A"], [-69.5, 645.0, -104.8, "x", 2, "ENT03112A", "DIV03106A"], [-69.5, 645.0, -67.4, "x", 2, "ENT03112A", "DIV03106A"], [-69.5, 645.0, -30.0, "x", 2, "ENT03112A", "DIV03106A"], [-27.2, 135.0, -174.8, "z", 2, "ENT03113A", "FON03105A"], [27.2, 135.0, -174.8, "z", 2, "ENT03113A", "FON03105A"], [-54.4, 135.0, -124.8, "x", 2, "ENT03113A", "DIV03106A"], [-54.4, 135.0, -87.4, "x", 2, "ENT03113A", "DIV03106A"], [-54.4, 135.0, -50.0, "x", 2, "ENT03113A", "DIV03106A"], [54.4, 135.0, -104.8, "x", 2, "ENT03113A", "DIV03107A"], [54.4, 135.0, -67.4, "x", 2, "ENT03113A", "DIV03107A"], [54.4, 135.0, -30.0, "x", 2, "ENT03113A", "DIV03107A"], [-27.2, 262.5, -174.8, "z", 2, "ENT03114A", "FON03105A"], [27.2, 262.5, -174.8, "z", 2, "ENT03114A", "FON03105A"], [-54.4, 262.5, -124.8, "x", 2, "ENT03114A", "DIV03106A"], [-54.4, 262.5, -87.4, "x", 2, "ENT03114A", "DIV03106A"], [-54.4, 262.5, -50.0, "x", 2, "ENT03114A", "DIV03106A"], [54.4, 262.5, -104.8, "x", 2, "ENT03114A", "DIV03107A"], [54.4, 262.5, -67.4, "x", 2, "ENT03114A", "DIV03107A"], [54.4, 262.5, -30.0, "x", 2, "ENT03114A", "DIV03107A"], [-27.2, 390.0, -174.8, "z", 2, "ENT03115A", "FON03105A"], [27.2, 390.0, -174.8, "z", 2, "ENT03115A", "FON03105A"], [-54.4, 390.0, -124.8, "x", 2, "ENT03115A", "DIV03106A"], [-54.4, 390.0, -87.4, "x", 2, "ENT03115A", "DIV03106A"], [-54.4, 390.0, -50.0, "x", 2, "ENT03115A", "DIV03106A"], [54.4, 390.0, -104.8, "x", 2, "ENT03115A", "DIV03107A"], [54.4, 390.0, -67.4, "x", 2, "ENT03115A", "DIV03107A"], [54.4, 390.0, -30.0, "x", 2, "ENT03115A", "DIV03107A"], [-27.2, 517.5, -174.8, "z", 2, "ENT03116A", "FON03105A"], [27.2, 517.5, -174.8, "z", 2, "ENT03116A", "FON03105A"], [-54.4, 517.5, -124.8, "x", 2, "ENT03116A", "DIV03106A"], [-54.4, 517.5, -87.4, "x", 2, "ENT03116A", "DIV03106A"], [-54.4, 517.5, -50.0, "x", 2, "ENT03116A", "DIV03106A"], [54.4, 517.5, -104.8, "x", 2, "ENT03116A", "DIV03107A"], [54.4, 517.5, -67.4, "x", 2, "ENT03116A", "DIV03107A"], [54.4, 517.5, -30.0, "x", 2, "ENT03116A", "DIV03107A"], [-27.2, 645.0, -174.8, "z", 2, "ENT03117A", "FON03105A"], [27.2, 645.0, -174.8, "z", 2, "ENT03117A", "FON03105A"], [-54.4, 645.0, -124.8, "x", 2, "ENT03117A", "DIV03106A"], [-54.4, 645.0, -87.4, "x", 2, "ENT03117A", "DIV03106A"], [-54.4, 645.0, -50.0, "x", 2, "ENT03117A", "DIV03106A"], [54.4, 645.0, -104.8, "x", 2, "ENT03117A", "DIV03107A"], [54.4, 645.0, -67.4, "x", 2, "ENT03117A", "DIV03107A"], [54.4, 645.0, -30.0, "x", 2, "ENT03117A", "DIV03107A"], [178.4, 135.0, -124.8, "x", 2, "ENT03118A", "LAT03104A"], [178.4, 135.0, -87.4, "x", 2, "ENT03118A", "LAT03104A"], [178.4, 135.0, -50.0, "x", 2, "ENT03118A", "LAT03104A"], [96.8, 135.0, -174.8, "z", 2, "ENT03118A", "FON03105A"], [151.2, 135.0, -174.8, "z", 2, "ENT03118A", "FON03105A"], [69.6, 135.0, -124.8, "x", 2, "ENT03118A", "DIV03107A"], [69.6, 135.0, -87.4, "x", 2, "ENT03118A", "DIV03107A"], [69.6, 135.0, -50.0, "x", 2, "ENT03118A", "DIV03107A"], [178.4, 262.5, -124.8, "x", 2, "ENT03119A", "LAT03104A"], [178.4, 262.5, -87.4, "x", 2, "ENT03119A", "LAT03104A"], [178.4, 262.5, -50.0, "x", 2, "ENT03119A", "LAT03104A"], [96.8, 262.5, -174.8, "z", 2, "ENT03119A", "FON03105A"], [151.2, 262.5, -174.8, "z", 2, "ENT03119A", "FON03105A"], [69.6, 262.5, -124.8, "x", 2, "ENT03119A", "DIV03107A"], [69.6, 262.5, -87.4, "x", 2, "ENT03119A", "DIV03107A"], [69.6, 262.5, -50.0, "x", 2, "ENT03119A", "DIV03107A"], [178.4, 390.0, -124.8, "x", 2, "ENT03120A", "LAT03104A"], [178.4, 390.0, -87.4, "x", 2, "ENT03120A", "LAT03104A"], [178.4, 390.0, -50.0, "x", 2, "ENT03120A", "LAT03104A"], [96.8, 390.0, -174.8, "z", 2, "ENT03120A", "FON03105A"], [151.2, 390.0, -174.8, "z", 2, "ENT03120A", "FON03105A"], [69.6, 390.0, -124.8, "x", 2, "ENT03120A", "DIV03107A"], [69.6, 390.0, -87.4, "x", 2, "ENT03120A", "DIV03107A"], [69.6, 390.0, -50.0, "x", 2, "ENT03120A", "DIV03107A"], [178.4, 517.5, -124.8, "x", 2, "ENT03121A", "LAT03104A"], [178.4, 517.5, -87.4, "x", 2, "ENT03121A", "LAT03104A"], [178.4, 517.5, -50.0, "x", 2, "ENT03121A", "LAT03104A"], [96.8, 517.5, -174.8, "z", 2, "ENT03121A", "FON03105A"], [151.2, 517.5, -174.8, "z", 2, "ENT03121A", "FON03105A"], [69.6, 517.5, -124.8, "x", 2, "ENT03121A", "DIV03107A"], [69.6, 517.5, -87.4, "x", 2, "ENT03121A", "DIV03107A"], [69.6, 517.5, -50.0, "x", 2, "ENT03121A", "DIV03107A"], [178.4, 645.0, -124.8, "x", 2, "ENT03122A", "LAT03104A"], [178.4, 645.0, -87.4, "x", 2, "ENT03122A", "LAT03104A"], [178.4, 645.0, -50.0, "x", 2, "ENT03122A", "LAT03104A"], [96.8, 645.0, -174.8, "z", 2, "ENT03122A", "FON03105A"], [151.2, 645.0, -174.8, "z", 2, "ENT03122A", "FON03105A"], [69.6, 645.0, -124.8, "x", 2, "ENT03122A", "DIV03107A"], [69.6, 645.0, -87.4, "x", 2, "ENT03122A", "DIV03107A"], [69.6, 645.0, -50.0, "x", 2, "ENT03122A", "DIV03107A"]];
+const STEPS = [{"t": "Revisa tus piezas", "x": "Confirma que tienes las 22 piezas de MDF Oxford 15.15 de la rejilla TOTTO y 174 clavacotes de madera de 8 × 30. Necesitas pegamento blanco, mazo de hule y prensas.", "hl": []}, {"t": "Rejilla · interior", "x": "Arma las piezas interiores: BAS03102A (piso), FON03105A (fondo), DIV03106A (separación vertical 1), DIV03107A (separación vertical 2). Une con clavacotes y pegamento las que se tocan entre sí; los costados entran en el siguiente paso.", "hl": ["BAS03102A", "FON03105A", "DIV03106A", "DIV03107A"]}, {"t": "Rejilla · horizontales", "x": "Coloca las 15 separaciones horizontales (5 por columna, cara 5 hacia arriba) con clavacotes y pegamento hacia el fondo y las separaciones verticales: ENT03108A, ENT03109A, ENT03110A, ENT03111A, ENT03112A, ENT03113A, ENT03114A, ENT03115A, ENT03116A, ENT03117A, ENT03118A, ENT03119A, ENT03120A, ENT03121A, ENT03122A.", "hl": ["ENT03108A", "ENT03109A", "ENT03110A", "ENT03111A", "ENT03112A", "ENT03113A", "ENT03114A", "ENT03115A", "ENT03116A", "ENT03117A", "ENT03118A", "ENT03119A", "ENT03120A", "ENT03121A", "ENT03122A"]}, {"t": "Rejilla · costados", "x": "Mete clavacotes con pegamento en los barrenos de canto de las piezas interiores y cierra con los costados LAT03103A y LAT03104A (cara barrenada hacia dentro). Prensa y revisa escuadra.", "hl": ["LAT03103A", "LAT03104A"]}, {"t": "Rejilla · superficie", "x": "Mete clavacotes con pegamento en los cantos de arriba de laterales, fondo y separaciones, y asienta el techo TAP03101A encima.", "hl": ["TAP03101A"]}];
+const NCLAV = 174, NBIS = 0;
+const PROY = "TOTTOREJ";
+const EXEC_ANY = "https://script.google.com/macros/s/AKfycbwU8S0xRvafqPcW1UURPLtQM8dNLcuXqVSSnIQNq3xFNgz0Nz2H4H2lmZyHz-HAEIJ1/exec";
+const EXEC_JOHILL = "https://script.google.com/a/macros/johill.com.mx/s/AKfycbwU8S0xRvafqPcW1UURPLtQM8dNLcuXqVSSnIQNq3xFNgz0Nz2H4H2lmZyHz-HAEIJ1/exec";
+const CHK = {};
+const GRP = {"31": "Rejilla · 387"};
+
+// ---------- Escena ----------
+const stage=document.getElementById('stage');
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+stage.prepend(renderer.domElement);
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(36,1,1,40000);
+cam.position.set(300,1100,2300);
+const ctl=new THREE.OrbitControls(cam,renderer.domElement);
+ctl.target.set(0,390,0);ctl.enableDamping=true;ctl.maxPolarAngle=Math.PI*0.49;ctl.minDistance=500;ctl.maxDistance=24000;
+scene.add(new THREE.HemisphereLight(0xfff6ea,0x8a7a66,0.78));
+const sun=new THREE.DirectionalLight(0xffffff,0.72);sun.position.set(1400,2600,1900);sun.castShadow=true;
+sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-6000,right:6000,top:6000,bottom:-6000,near:10,far:20000});scene.add(sun);
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(40000,40000),new THREE.MeshStandardMaterial({color:0xe9e2d6,roughness:1}));
+floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;scene.add(floor);
+
+// roble procedural (veta)
+function woodTex(vertical){
+  const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d');
+  g.fillStyle='#c9a77c';g.fillRect(0,0,256,256);
+  for(let i=0;i<70;i++){
+    const y=Math.random()*256, a=.05+Math.random()*.12;
+    g.strokeStyle=`rgba(${110+Math.random()*30|0},${75+Math.random()*20|0},${40+Math.random()*15|0},${a})`;
+    g.lineWidth=.6+Math.random()*2.2;g.beginPath();g.moveTo(0,y);
+    for(let x=0;x<=256;x+=32)g.lineTo(x,y+Math.sin(x/40+i)*2.2);g.stroke();
+  }
+  const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;
+  if(vertical){t.center.set(.5,.5);t.rotation=Math.PI/2;}
+  return t;
+}
+const texH=woodTex(false),texV=woodTex(true);
+const meshes={};
+P.forEach(p=>{
+  p.grp=Math.floor(p.id/100);
+  const geo=new THREE.BoxGeometry(...p.size);
+  const mat=new THREE.MeshStandardMaterial({map:p.vert?texV:texH,roughness:.65,transparent:true});
+  const m=new THREE.Mesh(geo,mat);m.castShadow=m.receiveShadow=true;
+  const ed=new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color:0x3b2f22,transparent:true,opacity:.5}));
+  m.add(ed);m.userData={p,ed};
+  const c=document.createElement('canvas');c.width=256;c.height=64;const g=c.getContext('2d');
+  g.fillStyle='rgba(34,32,28,.88)';g.beginPath();g.roundRect?g.roundRect(0,0,256,64,14):g.rect(0,0,256,64);g.fill();
+  g.fillStyle='#fff';g.font='bold 30px system-ui,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(p.code,128,33);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false}));
+  sp.scale.set(240,60,1);sp.position.set(0,p.size[1]/2+40,0);sp.renderOrder=10;sp.visible=false;m.add(sp);m.userData.sp=sp;
+  scene.add(m);meshes[p.code]=m;
+});
+const dowels=D.map(d=>{
+  const m=new THREE.Mesh(new THREE.CylinderGeometry(4,4,30,12),new THREE.MeshStandardMaterial({color:0xe8cfa0,roughness:.8,transparent:true}));
+  if(d[3]==='x')m.rotation.z=Math.PI/2;else if(d[3]==='z')m.rotation.x=Math.PI/2;
+  m.position.set(d[0],d[1],d[2]);m.userData={step:d[4],a:d[5],b:d[6]};scene.add(m);return m;
+});
+
+// ---------- Estado ----------
+let tab='armado',step=0,sel=null,playing=null,drawMode=false;
+const anim=[];
+function lerp(a,b,t){return a+(b-a)*t}
+function ease(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2}
+
+function layout(animate){
+  anim.length=0;
+  P.forEach(p=>{
+    const m=meshes[p.code];let target,vis=true,op=1;
+    if(tab==='piezas'){target=p.pos;op=sel&&sel!==p.code?0.12:1;}
+    else if(step===0){target=[p.pos[0]+p.from[0]*0.9,p.pos[1]+p.from[1]*0.6,p.pos[2]+p.from[2]*0.9];}
+    else{vis=p.step<=step;target=p.pos;}
+    m.visible=vis;
+    const hl=(tab==='armado'&&STEPS[step].hl.includes(p.code))||(tab==='piezas'&&sel===p.code);
+    m.material.opacity=op;m.material.depthWrite=op===1;m.userData.ed.material.opacity=op===1?.5:.12;
+    m.material.emissive=new THREE.Color(hl?0x015089:0x000000);m.material.emissiveIntensity=hl?.3:0;
+    m.userData.sp.visible=(tab==='piezas'&&sel===p.code);
+    if(drawMode){m.material.map=null;m.material.color.set(hl?0xcfe3f2:0xffffff);}
+    else{m.material.map=p.vert?texV:texH;m.material.color.set(0xffffff);}
+    m.material.needsUpdate=true;
+    if(animate&&tab==='armado'&&p.step===step&&step>0){
+      const s=[p.pos[0]+p.from[0],p.pos[1]+p.from[1],p.pos[2]+p.from[2]];m.position.set(...s);anim.push({m,s,t:target,t0:performance.now()});
+    }else m.position.set(...target);
+  });
+  dowels.forEach(d=>{
+    if(tab==='piezas'){d.visible=!sel||d.userData.a===sel||d.userData.b===sel;}
+    else d.visible=step>0&&d.userData.step<=step;
+    d.material.color.set(drawMode?0x999999:0xe8cfa0);
+  });
+  scene.background=new THREE.Color(drawMode?0xffffff:0xf2ece3);floor.visible=!drawMode;
+  document.querySelector('#prog i').style.width=(step/(STEPS.length-1)*100)+'%';
+}
+
+function lista(){
+  let h='',g=0;
+  P.forEach(x=>{if(x.grp!==g){g=x.grp;h+=`<div class="grp">${GRP[g]}</div>`;}
+    h+=`<div class="it ${x.code===sel?'on':''}" data-code="${x.code}"><span><b>${x.code}</b> · ${x.name}</span><span>${x.med}</span></div>`;});
+  return `<div class="list">${h}</div>`;
+}
+function renderSide(){
+  const s=document.getElementById('side');
+  if(tab==='armado'){
+    const st=STEPS[step];const nd=D.filter(d=>d[4]===step).length;
+    s.innerHTML=`<div class="kicker">Paso ${step} de ${STEPS.length-1}</div><h2>${st.t}</h2><p>${st.x}</p>
+      ${st.hl.map(c=>`<span class="tag" data-code="${c}">${c}</span>`).join('')}
+      ${nd?`<span class="tag hw">Clavacotes 8×30 · ${nd}</span>`:''}
+      ${step===0?lista()+`<div class="list"><div class="it"><span><b>Clavacote de madera</b> 8 × 30</span><span>× ${NCLAV}</span></div></div>`:''}`;
+  }else if(tab==='piezas'){
+    const p=P.find(x=>x.code===sel);
+    const ck=p&&CHK[p.code];
+    const ban=!ck?'':ck.st==='espera'?`<div class="chk w">Marcando pieza en la hoja de control…</div>`
+      :ck.st==='ok'?`<div class="chk ok"><b>✔ ${ck.r.detalle}</b><br>${ck.r.avance}</div>`
+      :ck.st==='no'?`<div class="chk no"><b>✘ ${ck.r.titulo}</b><br>${ck.r.detalle}</div>`
+      :`<div class="chk w">No se pudo marcar desde aquí.<br><a class="btn pri" style="display:inline-block;margin-top:8px;text-decoration:none" href="${EXEC_JOHILL}?m=${PROY}&p=${p.code}">Marcar con cuenta johill</a></div>`;
+    s.innerHTML=ban+(p?`<div class="kicker">Pieza · paso ${p.step} del armado</div><h2>${p.code} · ${p.name}</h2>
+      <table><tr><td>Descripción</td><td>${p.desc}</td></tr><tr><td>Medida final</td><td>${p.med} mm</td></tr>
+      <tr><td>Medida de corte</td><td>${p.corte} mm</td></tr>
+      <tr><td>Material</td><td>${p.mat} · veta al largo</td></tr>
+      <tr><td>Cantos</td><td>${p.cantos}</td></tr><tr><td>Barrenos</td><td>${p.barr}</td></tr>
+      <tr><td>Se une con</td><td>${p.une.length?p.une.map(c=>`<span class="tag" data-code="${c}">${c}</span>`).join(''):'Va suelta'}</td></tr></table>
+      <button class="btn" data-step="${p.step}">Ver su paso de armado</button>`:`<h2>Piezas del mueble</h2><p>Toca una pieza para ver su ficha. Cada QR de etiqueta abre aquí la pieza correspondiente.</p>`)+lista();
+  }
+}
+document.getElementById('side').addEventListener('click',e=>{
+  const c=e.target.closest('[data-code]');if(c){location.hash=c.dataset.code;return;}
+  const b=e.target.closest('[data-step]');if(b){step=+b.dataset.step;setTab('armado',true);}
+});
+
+function setTab(t,anim){
+  tab=t;document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+  const lab=t==='etiquetas';
+  document.getElementById('labels').style.display=lab?'block':'none';
+  document.getElementById('stage').style.display=lab?'none':'block';
+  document.getElementById('side').style.display=lab?'none':'block';
+  document.getElementById('hud').style.display=t==='armado'?'flex':'none';
+  if(lab)buildLabels();else{renderSide();layout(anim);resize();}
+}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{stopPlay();if(b.dataset.tab==='piezas'){sel=null;}location.hash=b.dataset.tab;});
+
+function go(n){step=Math.max(0,Math.min(STEPS.length-1,n));renderSide();layout(true);}
+function stopPlay(){if(playing){clearInterval(playing);playing=null;document.getElementById('bPlay').textContent='▶ Reproducir';}}
+document.getElementById('bPrev').onclick=()=>{stopPlay();go(step-1)};
+document.getElementById('bNext').onclick=()=>{stopPlay();go(step+1)};
+document.getElementById('bPlay').onclick=()=>{
+  if(playing){stopPlay();return;}
+  if(step===STEPS.length-1)go(0);
+  document.getElementById('bPlay').textContent='❚❚ Pausa';
+  playing=setInterval(()=>{if(step>=STEPS.length-1)stopPlay();else go(step+1);},2800);
+};
+document.getElementById('mSala').onclick=()=>{drawMode=false;layout(false)};
+document.getElementById('mDib').onclick=()=>{drawMode=true;layout(false)};
+addEventListener('keydown',e=>{if(tab!=='armado')return;if(e.key==='ArrowRight'){stopPlay();go(step+1)}if(e.key==='ArrowLeft'){stopPlay();go(step-1)}});
+
+function marcar(code){
+  if(CHK[code])return;
+  const E=window.__EARLY;if(E&&E.code===code){CHK[code]={st:E.st,r:E.r};if(E.st==='espera')window.__earlyDone=()=>{CHK[code]={st:E.st,r:E.r};if(tab==='piezas'&&sel===code)renderSide();};return;}
+  CHK[code]={st:'espera'};
+  const cb='__chk'+Date.now();let hecho=false;
+  const fin=(st,r)=>{if(hecho)return;hecho=true;CHK[code]={st,r};delete window[cb];if(tab==='piezas'&&sel===code)renderSide();};
+  window[cb]=r=>fin(r&&r.ok?'ok':'no',r||{});
+  const sc=document.createElement('script');
+  sc.src=EXEC_ANY+'?m='+encodeURIComponent(PROY)+'&p='+encodeURIComponent(code)+'&v='+encodeURIComponent(location.origin+location.pathname)+'&callback='+cb;
+  sc.onerror=()=>fin('err');setTimeout(()=>fin('err'),15000);
+  document.head.appendChild(sc);
+}
+function route(){
+  let h=decodeURIComponent(location.hash.slice(1));
+  if(/^c-/i.test(h)){h=h.slice(2);const q=P.find(x=>x.code.toLowerCase()===h.toLowerCase());
+    if(q){marcar(q.code);history.replaceState(null,'',location.pathname+location.search+'#'+q.code);}}
+  const p=P.find(x=>x.code.toLowerCase()===h.toLowerCase()||String(x.id)===h);
+  if(p){sel=p.code;setTab('piezas');frame(p);}
+  else if(h==='piezas'){setTab('piezas');}
+  else if(h==='etiquetas'){setTab('etiquetas');}
+  else setTab('armado',false);
+}
+function frame(p){const ps=P.filter(x=>x.grp===p.grp);const lo=[0,1,2].map(k=>Math.min(...ps.map(x=>x.pos[k]-x.size[k]/2))),hi=[0,1,2].map(k=>Math.max(...ps.map(x=>x.pos[k]+x.size[k]/2)));const c=[0,1,2].map(k=>(lo[k]+hi[k])/2),w=Math.max(hi[0]-lo[0],hi[1]-lo[1]);const asp=Math.max(0.45,Math.min(1.6,stage.clientWidth/Math.max(1,stage.clientHeight)));const d=Math.max(1400,w*2.1/asp);ctl.target.set(c[0],c[1],c[2]);cam.position.set(c[0]+d*0.32,c[1]+d*0.38,c[2]+d*0.9);ctl.update();}
+addEventListener('hashchange',route);
+
+function getBase(){
+  let v='';try{v=localStorage.getItem('tottorej_base')||''}catch(e){}
+  if(!v)v=PUBLIC_URL.startsWith('http')?PUBLIC_URL:location.href.split('#')[0];
+  return v.split('#')[0];
+}
+function buildLabels(){
+  const inp=document.getElementById('baseUrl');if(!inp.value)inp.value=getBase();
+  const base=inp.value.trim().split('#')[0];
+  const qa=qrcode(0,'M');qa.addData(base+'#armado');qa.make();
+  const full=`<div class="lab" style="border-style:solid;border-color:#015089">${qa.createSvgTag({cellSize:3,margin:1,scalable:true})}<div><div class="c">ARMADO</div><div class="n">Rejilla completa</div><div class="m">Armado paso a paso · ${P.length} piezas</div></div></div>`;
+  document.getElementById('sheet').innerHTML=full+P.map(p=>{
+    const q=qrcode(0,'M');q.addData(base+'#'+p.code);q.make();
+    return `<div class="lab">${q.createSvgTag({cellSize:3,margin:1,scalable:true})}<div><div class="c">${p.code}</div><div class="n">${p.name}</div><div class="m">${p.med} mm · Santa Teresa</div></div></div>`;
+  }).join('');
+  document.getElementById('msg').textContent='Cada QR abre: '+base+'#CÓDIGO';
+}
+document.getElementById('bApply').onclick=()=>{try{localStorage.setItem('tottorej_base',document.getElementById('baseUrl').value.trim())}catch(e){}buildLabels();};
+
+function resize(){const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();}
+addEventListener('resize',resize);
+(function loop(){
+  requestAnimationFrame(loop);
+  for(let i=anim.length-1;i>=0;i--){const a=anim[i];let t=Math.min(1,(performance.now()-a.t0)/900);const k=ease(t);
+    a.m.position.set(lerp(a.s[0],a.t[0],k),lerp(a.s[1],a.t[1],k),lerp(a.s[2],a.t[2],k));if(t>=1)anim.splice(i,1);}
+  ctl.update();renderer.render(scene,cam);
+})();
+resize();route();
+</script>
+</body>
+</html>
